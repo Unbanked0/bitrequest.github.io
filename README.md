@@ -5,6 +5,16 @@
 * [Privacy / Disclaimer](https://github.com/bitrequest/bitrequest.github.io/wiki/Privacy)
 * [Terms and conditions](https://github.com/bitrequest/bitrequest.github.io/wiki/Terms-and-conditions)
 
+# Improvements planned - FORK of original Bitrequest
+
+- Translation to French langage
+- Library to ease translation in any langage
+- (opt.) Suppress of non sovereign crypto
+- Better UX with payment request (back arrow, automatic adding to request list, choice between €/$ or BTC/XMR reference..)
+- Popup or FAQ to explain how to add a new wallet (+ video ?)
+- More accessible comptability extract
+- Structure docs
+
 ## Bitrequest
 
 Create and share payment requests for cryptocurrencies.  
