@@ -12,7 +12,8 @@
 - (opt.) Suppress of non sovereign crypto
 - Better UX with payment request (back arrow, automatic adding to request list, choice between €/$ or BTC/XMR reference..)
 - Popup or FAQ to explain how to add a new wallet (+ video ?)
-- More accessible comptability extract
+- More accessible accountability extracts
+- Direct link to local maps
 - Structure docs
 
 ## Bitrequest
