@@ -1,0 +1,6 @@
+page
+	subtitle: Accept crypto anywhere
+fld
+	name: Enter your name
+		placeholder: Your name
+		error: Please enter your name

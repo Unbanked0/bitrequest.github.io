@@ -1,0 +1,6 @@
+page:
+	subtitle: Accepter de la crypto partout
+fld:
+	name: Entrez votre nom
+		placeholder: Votre nom
+		error: Veuillez entrer votre nom
