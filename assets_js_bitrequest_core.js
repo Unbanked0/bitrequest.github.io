@@ -117,7 +117,7 @@ $(document).ready(function() {
             checkphp();
         }
     } else {
-        let content = "<h2 class='icon-bin'>Sorry!</h2><p>No Web Storage support..</p>";
+        let content = `<h2 class='icon-bin'>Sorry!</h2><p>${T.msg.noWebStore}</p>`;
         popdialog(content, "canceldialog");
     }
     $("#fixednav").html($("#relnav").html()); // copy nav
@@ -213,6 +213,7 @@ function setsymbols() { //fetch fiat currencies from fixer.io api
             setsymbols();
             return
         }
+        // TODO:I18N: Where is that text coming from?
         let content = "<h2 class='icon-bin'>Api call failed</h2><p class='doselect'>" + textStatus + "<br/>api did not respond<br/><br/><span id='proxy_dialog' class='ref'>Try other proxy</span></p>";
         popdialog(content, "canceldialog");
     })
@@ -254,7 +255,7 @@ function geterc20tokens_local() {
             storecoindata(data);
         }
     }).fail(function(jqXHR, textStatus, errorThrown) {
-        let content = "<h2 class='icon-bin'>Api call failed</h2><p class='doselect'>Unable to fetch tokeninfo</p>";
+        let content = `<h2 class='icon-bin'>Api call failed</h2><p class='doselect'>${T.err.fetchTokeninfo}</p>`;
         popdialog(content, "canceldialog");
     });
 }
@@ -831,7 +832,7 @@ function pinvalidate(thispad) {
             enc_s(seed_decrypt(current_pin));
         } else {
             let pinfloat = $("#pinfloat");
-            topnotify("pincode does not match");
+            topnotify(T.err.pincode);
             if (navigator.vibrate) {} else {
                 playsound(funk);
             }
@@ -1191,7 +1192,7 @@ function triggertxfunction(thislink) {
         triggertxfunction(thislink);
         return
     }
-    let pick_random = cs_node(currency, "Use random address", true).selected,
+    let pick_random = cs_node(currency, T.cmd.randAddr, true).selected,
         derives = check_derivations(currency),
         addresslist = filter_addressli(currency, "checked", true),
         firstlist = addresslist.first(),
@@ -1238,7 +1239,7 @@ function confirm_missing_seed() {
             ds_checkbox = thisdialog.find("#dontshowwrap"),
             ds_checked = ds_checkbox.data("checked");
         if (pk_checked == true) {} else {
-            popnotify("error", "Confirm privatekey ownership");
+            popnotify("error", T.err.confirmOwn);
             return false
         }
         if (ds_checked == true) { // whitlist seed id
@@ -1251,21 +1252,21 @@ function confirm_missing_seed() {
 }
 
 function get_address_warning(id, address, pass_dat) {
-    let seedstr = (pass_dat.xpubid) ? "Xpub" : "Seed",
-        rest_str = (seedstr == "Seed") ? (hasbip === true) ? "" : "<div id='rest_seed' class='ref' data-seedid='" + pass_dat.seedid + "'>Restore seed</div>" : "";
+    let seedstr = (pass_dat.xpubid) ? "Xpub" : T.fld.seed,
+        rest_str = (!pass_dat.xpubid) ? (hasbip === true) ? "" : "<div id='rest_seed' class='ref' data-seedid='" + pass_dat.seedid + `'>${T.fld.restoreSeed}</div>` : "";
     return $("<div class='formbox addwarning' id='" + id + "'>\
-        <h2 class='icon-warning'>Warning!</h2>\
+        <h2 class='icon-warning'>" + T.msg.warning + "</h2>\
         <div class='popnotify'></div>\
-        <p><strong>" + seedstr + " for '<span class='adspan'>" + address + "</span>' is missing.<br/>Are you sure you want to use this address?</strong></p>\
+        <p><strong>" + T.msg.missingSeed(seedstr, address) + "</strong></p>\
         <form class='addressform popform'>\
             <div class='inputwrap'>\
                 <div class='pk_wrap noselect'>\
                     <div id='pk_confirmwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div>\
-                    <span>I own the seed / private key of this address</span>\
+                    <span>" + T.fld.iOwn + "</span>\
                 </div>\
                 <div class='pk_wrap noselect'>\
                     <div id='dontshowwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div>\
-                    <span>Don't show again</span>\
+                    <span>" + T.fld.dontShowAgn + "</span>\
                 </div>" + rest_str +
         "</div>\
             <input type='submit' class='submit' value='OK'>\
@@ -1304,7 +1305,7 @@ function payrequest() {
         let thisnode = $(this);
         if (offline === true && thisnode.hasClass("isfiat")) {
             // do not trigger fiat request when offline because of unknown exchange rate
-            notify("Unable to get exchange rate");
+            notify(T.err.getXchgRate);
             return
         }
         let thisrequestlist = thisnode.closest("li.rqli"),
@@ -1864,12 +1865,13 @@ function payment_lookup(request_dat) {
         blockexplorer = get_blockexplorer(currency),
         bu_url = blockexplorer_url(currency, false, request_dat.erc20) + request_dat.address,
         content = "<div class='formbox'>\
-            <h2 class='icon-warning'><span class='icon-qrcode'/>No payment detected</h2>\
+            <h2 class='icon-warning'><span class='icon-qrcode'/>" + T.msg.noPayment + "</h2>\
             <div id='ad_info_wrap'>\
-                <p><strong><a href='" + bu_url + "' target='_blank' class='ref check_recent'>Look for recent incoming " + currency + " payments on " + blockexplorer + " <span class='icon-new-tab'></a></strong></p>\
+                <p><strong><a href='" + bu_url + "' target='_blank' class='ref check_recent'>" +
+                    T.link.incomings(currency, blockexplorer) + "<span class='icon-new-tab'></a></strong></p>\
                 <div class='pk_wrap noselect'>\
                     <div id='dontshowwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div>\
-                    <span>Don't show again</span>\
+                    <span>" + T.fld.dontShowAgn + "</span>\
                 </div>\
             </div>\
             <div id='backupactions'>\
@@ -1928,12 +1930,12 @@ function recent_requests(recent_payments) {
     let addresslist = recent_requests_list(recent_payments);
     if (addresslist.length) {
         let content = "<div class='formbox'>\
-            <h2 class='icon-history'>Recent requests:</h2>\
+            <h2 class='icon-history'>" + T.fld.recentRequests + ":</h2>\
             <div id='ad_info_wrap'>\
             <ul>" + addresslist + "</ul>\
             </div>\
             <div id='backupactions'>\
-                <div id='dismiss' class='customtrigger'>CANCEL</div>\
+                <div id='dismiss' class='customtrigger'>" + T.cmd.cancel + "</div>\
             </div>\
             </div>";
         popdialog(content, "triggersubmit");
@@ -2102,26 +2104,26 @@ function addaddress(ad, edit) {
         derived = (ad.seedid || ad.xpubid),
         readonly = (edit === true) ? " readonly" : "",
         nopub = (test_derive === false) ? true : (is_xpub(currency) === false || has_xpub(currency) !== false),
-        choose_wallet_str = "<span id='get_wallet' class='address_option' data-currency='" + currency + "'>I don't have a " + currency + " address yet</span>",
-        derive_seed_str = "<span id='option_makeseed' class='address_option' data-currency='" + currency + "'>Generate address from secret phrase</span>",
+        choose_wallet_str = "<span id='get_wallet' class='address_option' data-currency='" + currency + "'>" + T.cmd.noAddrYet(currency) + "</span>",
+        derive_seed_str = "<span id='option_makeseed' class='address_option' data-currency='" + currency + "'>" + T.cmd.genFromPhrase + "</span>",
         options = (hasbip === true) ? choose_wallet_str : (test_derive === true && c_derive[currency]) ? (hasbip32(currency) === true) ? derive_seed_str : choose_wallet_str : choose_wallet_str,
         pnotify = (body.hasClass("showstartpage")) ? "<div class='popnotify' style='display:block'>" + options + "</div>" : "<div class='popnotify'></div>",
         scanqr = (hascam === true && edit === false) ? "<div class='qrscanner' data-currency='" + currency + "' data-id='address' title='scan qr-code'><span class='icon-qrcode'></span></div>" : "",
-        title = (edit === true) ? "<h2 class='icon-pencil'>Edit label</h2>" : "<h2>" + getcc_icon(ad.cmcid, cpid, ad.erc20) + " Add " + currency + " address</h2>",
-        pk_checkbox = (edit === true) ? "" : "<div id='pk_confirm' class='noselect'><div id='pk_confirmwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div><span>I own the seed / private key of this address</span></div>",
+        title = (edit === true) ? "<h2 class='icon-pencil'>" + T.cmd.label.edit + "</h2>" : "<h2>" + getcc_icon(ad.cmcid, cpid, ad.erc20) + T.cmd.address.add(currency) + "</h2>",
+        pk_checkbox = (edit === true) ? "" : "<div id='pk_confirm' class='noselect'><div id='pk_confirmwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div><span>" + T.fld.iOwn + "</span></div>",
         addeditclass = (edit === true) ? "edit" : "add",
         xpubclass = (nopub) ? " hasxpub" : " noxpub",
-        xpubph = (nopub) ? "Enter a " + currency + " address" : "Address / Xpub",
+        xpubph = (nopub) ? T.fld.address.spec(currency) : T.fld.address.xpub,
         vk_val = (ad.vk) ? ad.vk : "",
         has_vk = (vk_val != ""),
         scanvk = (hascam === true) ? "<div class='qrscanner' data-currency='" + currency + "' data-id='viewkey' title='scan qr-code'><span class='icon-qrcode'></span></div>" : "",
         vk_box = (currency == "monero") ? (has_vk) ? "" : "<div class='inputwrap'><input type='text' class='vk_input' value='" + vk_val + "' placeholder='View key'>" + scanvk + "</div>" : "",
-        content = $("<div class='formbox form" + addeditclass + xpubclass + "' id='addressformbox'>" + title + pnotify + "<form id='addressform' class='popform'><div class='inputwrap'><input type='text' id='address_xpub_input' class='address' value='" + address + "' data-currency='" + currency + "' placeholder='" + xpubph + "'" + readonly + ">" + scanqr + "</div>" + vk_box + "<input type='text' class='addresslabel' value='" + label + "' placeholder='label'>\
+        content = $("<div class='formbox form" + addeditclass + xpubclass + "' id='addressformbox'>" + title + pnotify + "<form id='addressform' class='popform'><div class='inputwrap'><input type='text' id='address_xpub_input' class='address' value='" + address + "' data-currency='" + currency + "' placeholder='" + xpubph + "'" + readonly + ">" + scanqr + "</div>" + vk_box + "<input type='text' class='addresslabel' value='" + label + "' placeholder='" + T.fld.label + "'>\
         <div id='ad_info_wrap' style='display:none'>\
             <ul class='td_box'>\
             </ul>\
             <div id='pk_confirm' class='noselect'>\
-                <div id='matchwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div><span>The above addresses match those in my " + currency + " wallet</span>\
+                <div id='matchwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div><span>" + T.fld.addressMatch(currency) + "</span>\
             </div>\
         </div>" + pk_checkbox +
             "<input type='submit' class='submit' value='OK'></form>").data(ad);
@@ -2260,13 +2262,13 @@ function add_erc20() {
                         <div id='ac_options' class='options'>" + tokenlist + "</div>\
                     </div>\
                     <div id='erc20_inputs'>\
-                    <div class='inputwrap'><input type='text' class='address' value='' placeholder='Enter a address'/>" + scanqr + "</div>\
-                    <input type='text' class='addresslabel' value='' placeholder='label'/>\
+                    <div class='inputwrap'><input type='text' class='address' value='' placeholder='" + T.fld.address + "'/>" + scanqr + "</div>\
+                    <input type='text' class='addresslabel' value='' placeholder='" + T.fld.label + "'/>\
                     <div id='pk_confirm' class='noselect'>\
                         <div id='pk_confirmwrap' class='cb_wrap' data-checked='false'>\
                             <span class='checkbox'></span>\
                         </div>\
-                        <span>I own the seed / private key of this address</span>\
+                        <span>" + T.fld.iOwn + "</span>\
                     </div></div>\
                     <input type='submit' class='submit' value='OK'/>\
                 </form></div>").data(nodedata);
@@ -2345,8 +2347,7 @@ function validateaddress_vk(ad) {
         addressfield = $("#addressform .address"),
         addressinputval = addressfield.val();
     if (addressinputval) {} else {
-        let errormessage = "Enter a " + currency + " address";
-        popnotify("error", errormessage);
+        popnotify("error", T.fld.address.spec(currency));
         addressfield.focus();
         return
     }
@@ -2356,17 +2357,16 @@ function validateaddress_vk(ad) {
             vklength = vkinputval.length;
         if (vklength) {
             if (vklength !== 64) {
-                popnotify("error", "Invalid Viewkey");
+                popnotify("error", T.err.viewkey);
                 return
             }
             if (check_vk(vkinputval)) {} else {
-                popnotify("error", "Invalid Viewkey");
+                popnotify("error", T.err.viewkey);
                 return
             }
             let valid = check_address(addressinputval, currency);
             if (valid === true) {} else {
-                let errormessage = addressinputval + " is NOT a valid " + currency + " address";
-                popnotify("error", errormessage);
+                popnotify("error", T.fld.address.invalid(addressinputval, currency));
                 return
             }
             let payload = {
@@ -2391,8 +2391,7 @@ function validateaddress_vk(ad) {
                 let data = br_result(e).result,
                     errormessage = data.Error;
                 if (errormessage) {
-                    let error = (errormessage) ? errormessage : "Invalid Viewkey";
-                    popnotify("error", error);
+                    popnotify("error", errormessage ?? T.err.viewkey);
                     return
                 }
                 let start_height = data.start_height;
@@ -2403,14 +2402,14 @@ function validateaddress_vk(ad) {
                 console.log(jqXHR);
                 console.log(textStatus);
                 console.log(errorThrown);
-                popnotify("error", "Error verifying Viewkey");
+                popnotify("error", T.err.viewkey.verifying);
             });
             return
         }
         validateaddress(ad, false);
         return
     }
-    popnotify("error", "Pick a currency");
+    popnotify("error", T.fld.currency.missing);
 }
 
 function validateaddress(ad, vk) {
@@ -2433,19 +2432,19 @@ function validateaddress(ad, vk) {
             address = ad.address,
             label = ad.label;
         if (addressduplicate === true && address !== addinputval) {
-            popnotify("error", "address already exists");
+            popnotify("error", fld.address.already.exists);
             addressfield.select();
             return
         }
         if (addinputval == new_address) { // prevent double address entries
-            console.log("already added");
+            console.log(fld.address.already.added);
             return
         }
         let valid = check_address(addinputval, currencycheck);
         if (valid === true) {
             let validlabel = check_address(labelinputval, currencycheck);
             if (validlabel === true) {
-                popnotify("error", "invalid label");
+                popnotify("error", T.fld.label.invalid);
                 labelfield.val(label).select();
                 return
             }
@@ -2498,16 +2497,16 @@ function validateaddress(ad, vk) {
                 clear_savedurl();
                 return
             }
-            popnotify("error", "Confirm privatekey ownership");
+            popnotify("error", T.err.confirmOwn);
             return
         }
-        popnotify("error", addressinputval + " is NOT a valid " + currency + " address");
+        popnotify("error", T.fld.address.invalid(addressinputval, currency));
         setTimeout(function() {
             addressfield.select();
         }, 10);
         return
     }
-    popnotify("error", "Enter a " + currency + " address");
+    popnotify("error", T.fld.address.spec(currency));
     addressfield.focus();
 }
 
@@ -2749,14 +2748,14 @@ function showoptionstrigger() {
             showrequests = (savedrequest.length > 0) ? "<li><div class='showrequests'><span class='icon-qrcode'></span> Show requests</div></li>" : "",
             newrequest = (ad.checked === true) ? "<li>\
                 <div data-rel='' class='newrequest' title='create request'>\
-                    <span class='icon-plus'></span> New request</div>\
+                    <span class='icon-plus'></span>" + T.fld.cmd.request.new + "</div>\
             </li>" : "",
             content = $("\
                 <ul id='optionslist''>" + newrequest + showrequests +
-                "<li><div class='address_info'><span class='icon-info'></span> Address info</div></li>\
-                    <li><div class='editaddress'> <span class='icon-pencil'></span> Edit label</div></li>\
-                    <li><div class='removeaddress'><span class='icon-bin'></span> Remove address</div></li>\
-                    <li><div id='rpayments'><span class='icon-history'></span> Recent payments</div></li>\
+                "<li><div class='address_info'><span class='icon-info'></span>" + T.cmd.address.info + "</div></li>\
+                    <li><div class='editaddress'> <span class='icon-pencil'></span>" + T.cmd.label.edit + "</div></li>\
+                    <li><div class='removeaddress'><span class='icon-bin'></span>" + T.cmd.address.remove + "</div></li>\
+                    <li><div id='rpayments'><span class='icon-history'></span>" + T.cmd.recentPayments + "</div></li>\
                 </ul>").data(ad);
         showoptions(content);
         return
@@ -2784,7 +2783,7 @@ function showoptions(content, addclass, callback) {
     $("#optionsbox").html(content);
     body.addClass("blurmain_options");
 }
-
+// TODO:I18N Translated until here
 function lockscreen(timer) {
     let timeleft = timer - now(),
         cd = countdown(timeleft),
