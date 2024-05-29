@@ -37,7 +37,6 @@ const ls_support = check_local(),
     after_poll_timeout = 15000,
     xss_alert = "xss attempt detected";
 
-OmnI18n.init(["en", "fr"], "dictionary_$.i18n");
 let scrollposition = 0,
     language = OmnI18n.locale,
     is_ios_app = false, // ios app fingerprint
@@ -1192,7 +1191,7 @@ function triggertxfunction(thislink) {
         triggertxfunction(thislink);
         return
     }
-    let pick_random = cs_node(currency, T.cmd.randAddr, true).selected,
+    let pick_random = cs_node(currency, T.cmd.address.random, true).selected,
         derives = check_derivations(currency),
         addresslist = filter_addressli(currency, "checked", true),
         firstlist = addresslist.first(),
@@ -1253,7 +1252,7 @@ function confirm_missing_seed() {
 
 function get_address_warning(id, address, pass_dat) {
     let seedstr = (pass_dat.xpubid) ? "Xpub" : T.fld.seed,
-        rest_str = (!pass_dat.xpubid) ? (hasbip === true) ? "" : "<div id='rest_seed' class='ref' data-seedid='" + pass_dat.seedid + `'>${T.fld.restoreSeed}</div>` : "";
+        rest_str = (!pass_dat.xpubid) ? (hasbip === true) ? "" : "<div id='rest_seed' class='ref' data-seedid='" + pass_dat.seedid + `'>${T.fld.seed.restore}</div>` : "";
     return $("<div class='formbox addwarning' id='" + id + "'>\
         <h2 class='icon-warning'>" + T.msg.warning + "</h2>\
         <div class='popnotify'></div>\
@@ -2105,7 +2104,7 @@ function addaddress(ad, edit) {
         readonly = (edit === true) ? " readonly" : "",
         nopub = (test_derive === false) ? true : (is_xpub(currency) === false || has_xpub(currency) !== false),
         choose_wallet_str = "<span id='get_wallet' class='address_option' data-currency='" + currency + "'>" + T.cmd.noAddrYet(currency) + "</span>",
-        derive_seed_str = "<span id='option_makeseed' class='address_option' data-currency='" + currency + "'>" + T.cmd.genFromPhrase + "</span>",
+        derive_seed_str = "<span id='option_makeseed' class='address_option' data-currency='" + currency + "'>" + T.cmd.address.genFromPhrase + "</span>",
         options = (hasbip === true) ? choose_wallet_str : (test_derive === true && c_derive[currency]) ? (hasbip32(currency) === true) ? derive_seed_str : choose_wallet_str : choose_wallet_str,
         pnotify = (body.hasClass("showstartpage")) ? "<div class='popnotify' style='display:block'>" + options + "</div>" : "<div class='popnotify'></div>",
         scanqr = (hascam === true && edit === false) ? "<div class='qrscanner' data-currency='" + currency + "' data-id='address' title='scan qr-code'><span class='icon-qrcode'></span></div>" : "",
@@ -2432,12 +2431,12 @@ function validateaddress(ad, vk) {
             address = ad.address,
             label = ad.label;
         if (addressduplicate === true && address !== addinputval) {
-            popnotify("error", fld.address.already.exists);
+            popnotify("error", T.fld.address.already.exists);
             addressfield.select();
             return
         }
         if (addinputval == new_address) { // prevent double address entries
-            console.log(fld.address.already.added);
+            console.log(T.fld.address.already.added);
             return
         }
         let valid = check_address(addinputval, currencycheck);
