@@ -41,6 +41,22 @@ function __values(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 }
 
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+function __asyncGenerator(thisArg, _arguments, generator) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+    function fulfill(value) { resume("next", value); }
+    function reject(value) { resume("throw", value); }
+    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+}
+
 function __asyncValues(o) {
     if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
     var m = o[Symbol.asyncIterator], i;
@@ -3908,6 +3924,11 @@ const options = commandLineArgs$1([
         type: Boolean
     },
     {
+        name: 'grouped',
+        alias: 'g',
+        type: String
+    },
+    {
         name: 'input',
         alias: 'i',
         type: String
@@ -3933,18 +3954,65 @@ function fatal(message) {
 if (!options.input)
     fatal('Input must be specified');
 const fdb = new FileDB(options.input), server = new I18nServer(fdb);
+function exported() {
+    return __asyncGenerator(this, arguments, function* exported_1() {
+        for (const locale of options.locales) {
+            const condensed = stringify(yield __await(server.condense([locale, ...options.locales])));
+            yield yield __await({
+                locale,
+                content: `OmnI18n.preload('${locale}', ${condensed})`
+            });
+        }
+    });
+}
 function exportLocales() {
     return __awaiter(this, void 0, void 0, function* () {
-        for (const locale of options.locales) {
-            const condensed = yield server.condense([locale, ...options.locales]), output = join(options.output, options.pattern.replace('$', locale));
+        var _a, e_1, _b, _c, _d, e_2, _e, _f;
+        if (options.grouped) {
+            let total = '';
+            try {
+                for (var _g = true, _h = __asyncValues(exported()), _j; _j = yield _h.next(), _a = _j.done, !_a; _g = true) {
+                    _c = _j.value;
+                    _g = false;
+                    const { content } = _c;
+                    total += content + '\n';
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (!_g && !_a && (_b = _h.return)) yield _b.call(_h);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            const output = join(options.output, options.grouped);
             console.log('->', output);
-            yield writeFile$1(output, `OmnI18n.preload('${locale}', ${stringify(condensed)})`, 'utf8');
+            yield writeFile$1(output, total, 'utf8');
+        }
+        else {
+            try {
+                for (var _k = true, _l = __asyncValues(exported()), _m; _m = yield _l.next(), _d = _m.done, !_d; _k = true) {
+                    _f = _m.value;
+                    _k = false;
+                    const { locale, content } = _f;
+                    const output = join(options.output, options.pattern.replace('$', locale));
+                    console.log('->', output);
+                    yield writeFile$1(output, content, 'utf8');
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (!_k && !_d && (_e = _l.return)) yield _e.call(_l);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
         }
     });
 }
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, e_1, _b, _c;
+        var _a, e_3, _b, _c;
         yield fdb.loaded;
         if (options.output)
             mkdir(options.output, { recursive: true });
@@ -3963,12 +4031,12 @@ function main() {
                     console.log('Waiting for changes...');
                 }
             }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
             finally {
                 try {
                     if (!_d && !_a && (_b = _e.return)) yield _b.call(_e);
                 }
-                finally { if (e_1) throw e_1.error; }
+                finally { if (e_3) throw e_3.error; }
             }
         }
     });
