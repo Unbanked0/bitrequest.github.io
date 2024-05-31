@@ -1,3 +1,4 @@
+// TODO:I18N: I forgot, add an `i18n` attribute to generated html with the key if possible
 //globals
 const ls_support = check_local(),
     userAgent = navigator.userAgent || navigator.vendor || window.opera,
@@ -2431,12 +2432,12 @@ function validateaddress(ad, vk) {
             address = ad.address,
             label = ad.label;
         if (addressduplicate === true && address !== addinputval) {
-            popnotify("error", T.fld.address.already.exists);
+            popnotify("error", T.err.address.already.exists);
             addressfield.select();
             return
         }
         if (addinputval == new_address) { // prevent double address entries
-            console.log(T.fld.address.already.added);
+            console.log(T.err.address.already.added);
             return
         }
         let valid = check_address(addinputval, currencycheck);
