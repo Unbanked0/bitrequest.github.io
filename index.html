@@ -49,10 +49,10 @@
 				<nav id="relnav" class="navstyle">
 					<ul class="nav">
 						<li class="currenciesbttn">
-							<div data-rel="?p=currencies" class="self icon-coin-dollar"><span>currencies</span></div>
+							<div data-rel="?p=currencies" class="self icon-coin-dollar"><span i18n="page.currencies"></span></div>
 						</li>
 						<li class="requestsbttn">
-							<div data-rel="?p=requests" class="self icon-qrcode"><span>requests</span></div>
+							<div data-rel="?p=requests" class="self icon-qrcode"><span i18n="page.requests"></span></div>
 						</li>
 						<li class="settingsbttn">
 							<div data-rel="?p=settings" class="self icomoon"><span></span></div>
@@ -82,7 +82,7 @@
 				</div>
 				<div class="page" id="settings">
 					<div class="content">
-						<h2 class="heading">Settings</h2>
+						<h2 class="heading" i18n="page.settings"></h2>
 						<ul id="appsettings" class="settinglist applist listyle2">	
 						</ul>
 						<div id="app_info">
@@ -96,17 +96,17 @@
 				</div>
 				<div class="page" id="requests">
 					<div class="content">
-						<h2 class="heading">Requests</h2>
+						<h2 class="heading" i18n="page.requests"></h2>
 						<ul id="requestlist" class="requestlist">
 						</ul>
-						<div data-rel="?p=archive" id="viewarchive" data-title="View archive" class="self button">
-							<span class="icon-folder-open">View archive</span>
+						<div data-rel="?p=archive" id="viewarchive" i18n="data-title: View archive" class="self button">
+							<span class="icon-folder-open" i18n="cmd.viewArchive"></span>
 						</div>
 					</div>
 				</div>
 				<div class="page" id="archive">
 					<div class="content">
-						<h2 class="heading">Archive</h2>
+						<h2 class="heading" i18n="page.archive"></h2>
 						<ul id="archivelist" class="requestlist">
 						</ul>
 					</div>
@@ -114,7 +114,7 @@
 			</main>
 		</div>
 		<div id="newrequest_alias" class="alias noselect">a<span class="icon-qrcode"></span></div>
-		<div id="request_history" class="alias noselect" title="check for recent payments"><span class="icon-history"></span></div>
+		<div id="request_history" class="alias noselect" i18n="title: ttl.checkRecPay"><span class="icon-history"></span></div>
 		<div id="startpage" class="sp_intro">
 			<div id="startsteps">
 				<div id="intro" class="startpanel validstep panelactive" data-next="entername">
@@ -163,7 +163,7 @@
 		<div id="loader" class="popbg flex"><div class="lds-ring"><div></div><div></div><div></div><div></div></div><br/><p id="loadtext"><span i18n="msg.loading"></span> ...</p></div>
 		<div id="payment" class="popbg flex">
 			<div id="paymentdialog" class="dialog">
-			   	<div id="paymentdialogbox">
+				<div id="paymentdialogbox">
 				</div>
 			</div>
 		</div>

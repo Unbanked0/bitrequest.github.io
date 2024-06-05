@@ -61,18 +61,20 @@ let scrollposition = 0,
     init = br_get_local("init", true),
     io = br_dobj(init, true),
     new_address, // prevent double address entries
-    proxy_attempts = {};
+    proxy_attempts = {},
+    documentReady = false;
 
 OmnI18n.onLocaleChange(function(newLanguage) {
     language = newLanguage;
     setlocales();
+    if(documentReady) generateTemplates();
 });
 
 if (has_ndef && !inframe) {
     ndef = new NDEFReader();
 }
-
 $(document).ready(function() {
+    documentReady = true;
     $.ajaxSetup({
         "cache": false
     });
@@ -97,10 +99,11 @@ $(document).ready(function() {
     } else {
         html.addClass("noframe");
     }
+    if(globalThis.T) generateTemplates();
 });
 
 
-OmnI18n.onLocaleChange(function(newLanguage) {    
+function generateTemplates() {    
     //some api tests first
     rendersettings(); //retrieve settings from localstorage (load first to retrieve apikey)
     if (ls_support) { //check for local storage support
@@ -138,7 +141,7 @@ OmnI18n.onLocaleChange(function(newLanguage) {
     console.log({
         "config": br_config
     });
-})
+}
 
 function checkphp() { //check for php support by fetching fiat currencies from local api php file
     api_proxy({
