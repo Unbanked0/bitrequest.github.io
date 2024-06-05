@@ -777,10 +777,10 @@ html.showmain #newrequest_alias {
 .applist.pobox li.seedv .address .srcseed>path {
 	fill: #008500;
 }
-
+/*
 .applist.pobox li.seedv .toggleaddress {
-	//visibility:hidden;
-}
+	visibility:hidden;
+}*/
 
 .applist.pobox li .usedicon {
 	display: none;
@@ -893,10 +893,10 @@ html.showmain #newrequest_alias {
 .requestlist li.rqli[data-status="paid"].expired .expired_panel {
 	display: none;
 }
-
+/*
 #usedcurrencies>li[data-currency="monero"] {
-	//display:none;
-}
+	display:none;
+}*/
 
 #usedcurrencies .liwrap h2,
 .pobox h2 {
@@ -1488,7 +1488,6 @@ html.dragmode .currentpage .applist li.dragging {
 .txli_conf .confbar {
 	position: absolute;
 	top: 0;
-	0;
 	bottom: 0;
 	left: 0;
 	width: 100%;
@@ -3026,27 +3025,48 @@ html[data-role='cashier'] #show_vk {
 	cursor: not-allowed;
 }
 
-#locales-list {
+#locales-menu {
 	z-index: 9999;
 	position: absolute;
 	top: 0;
 	left: 0;
+	font-size: 2em;
 }
 
-#locales-list .name {
+#locales-list {
+	display: none;
+}
+
+#locales-menu:hover #locales-list {
+	display: inline-block;
+}
+
+#current-locale .name {
 	display: none;
 }
 
 #locales-list button {
-	background-color: transparent;
+	display: block;
+	width: 100%;
+	text-align: left;
+}
+
+#locales-menu button {
+	/*background-color: transparent;*/
+	background-color: #ccc8c8;
 	border: 0;
 }
 
-#locales-list button.selected {
+#locales-menu #current-locale button {
 	background-color: rgba(255, 255, 255, 0.15);
+	vertical-align: top;
 }
 
-.flag .flag-main {
+#locales-list button.selected {
+	display: none
+}
+
+#locales-menu .flag .flag-main {
 	margin-right: -0.8em;
 }
 

@@ -2027,15 +2027,11 @@ function popnotify(result, message) { // notifications in dialogs
 }
 
 //dialogs
-function popdialog(content, functionname, trigger, custom, replace) {
+function popdialog(content, functionname, trigger, custom) {
     if (custom) {
         $("#popup #actions").addClass("custom");
     }
-    if (replace) {
-        $("#dialogbody").html(content);
-    } else {
-        $("#dialogbody").append(content);
-    }
+    $("#dialogbody").html(content);
     body.addClass("blurmain");
     $("#popup").addClass("active showpu");
     let thistrigger = (trigger) ? trigger : $("#popup #execute");
@@ -2257,11 +2253,11 @@ function add_erc20() {
             scanqr = (hascam === true) ? "<div class='qrscanner' data-currency='ethereum' data-id='address' title='scan qr-code'><span class='icon-qrcode'></span></div>" : "",
             content = $("\
             <div class='formbox' id='erc20formbox'>\
-                <h2 class='icon-coin-dollar'>Add erc20 token</h2>\
+                <h2 class='icon-coin-dollar'>" + T.ttl.erc20 + "</h2>\
                 <div class='popnotify'></div>\
                 <form id='addressform' class='popform'>\
                     <div class='selectbox'>\
-                        <input type='text' value='' placeholder='Pick erc20 token' id='ac_input'/>\
+                        <input type='text' value='' placeholder='" + T.fld.erc20 + "' id='ac_input'/>\
                         <div class='selectarrows icon-menu2' data-pe='none'></div>\
                         <div id='ac_options' class='options'>" + tokenlist + "</div>\
                     </div>\
@@ -3798,7 +3794,7 @@ function rendercurrencies() {
             }
         });
     }
-    $("ul#allcurrencies").append("<li id='choose_erc20' data-currency='erc20 token' class='start_cli'><div class='liwrap'><h2><img src='" + c_icons("ph") + "'/>More...</h2></div></li>\
+    $("ul#allcurrencies").append("<li id='choose_erc20' data-currency='erc20 token' class='start_cli'><div class='liwrap'><h2><img src='" + c_icons("ph") + "'/>" + T.cmd.more + "...</h2></div></li>\
     <li id='rshome' class='restore start_cli' data-currency='erc20 token'><div class='liwrap'><h2><span class='icon-upload'> Restore from backup</h2></div></li><li id='start_cli_margin' class='start_cli'><div class='liwrap'><h2></h2></div></li>").prepend("<li id='connectln' data-currency='bitcoin' class='start_cli'><div class='liwrap'><h2><img src='img_logos_btc-lnd.png'/>Lightning</h2></div></li>");
 }
 
