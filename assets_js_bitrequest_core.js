@@ -1240,7 +1240,7 @@ function confirm_missing_seed() {
             ds_checkbox = thisdialog.find("#dontshowwrap"),
             ds_checked = ds_checkbox.data("checked");
         if (pk_checked == true) {} else {
-            popnotify("error", T.err.confirmOwn);
+            popnotify("error", T.err.confirmOwn());
             return false
         }
         if (ds_checked == true) { // whitlist seed id
@@ -1427,7 +1427,7 @@ function confirm_missing_seed_toggle() {
             ds_checkbox = thisdialog.find("#dontshowwrap"),
             ds_checked = ds_checkbox.data("checked");
         if (pk_checked == true) {} else {
-            popnotify("error", "Confirm privatekey ownership");
+            popnotify("error", T.err.confirmOwn());
             return
         }
         if (ds_checked == true) { // whitlist seed id
@@ -2358,11 +2358,11 @@ function validateaddress_vk(ad) {
             vklength = vkinputval.length;
         if (vklength) {
             if (vklength !== 64) {
-                popnotify("error", T.err.viewkey);
+                popnotify("error", T.err.viewkey());
                 return
             }
             if (check_vk(vkinputval)) {} else {
-                popnotify("error", T.err.viewkey);
+                popnotify("error", T.err.viewkey());
                 return
             }
             let valid = check_address(addressinputval, currency);
@@ -2392,7 +2392,7 @@ function validateaddress_vk(ad) {
                 let data = br_result(e).result,
                     errormessage = data.Error;
                 if (errormessage) {
-                    popnotify("error", errormessage ?? T.err.viewkey);
+                    popnotify("error", errormessage ?? T.err.viewkey());
                     return
                 }
                 let start_height = data.start_height;
@@ -2403,14 +2403,14 @@ function validateaddress_vk(ad) {
                 console.log(jqXHR);
                 console.log(textStatus);
                 console.log(errorThrown);
-                popnotify("error", T.err.viewkey.verifying);
+                popnotify("error", T.err.viewkey.verifying());
             });
             return
         }
         validateaddress(ad, false);
         return
     }
-    popnotify("error", T.fld.currency.missing);
+    popnotify("error", T.fld.currency.missing());
 }
 
 function validateaddress(ad, vk) {
@@ -2433,7 +2433,7 @@ function validateaddress(ad, vk) {
             address = ad.address,
             label = ad.label;
         if (addressduplicate === true && address !== addinputval) {
-            popnotify("error", T.err.address.already.exists);
+            popnotify("error", T.err.address.already.exists());
             addressfield.select();
             return
         }
@@ -2445,7 +2445,7 @@ function validateaddress(ad, vk) {
         if (valid === true) {
             let validlabel = check_address(labelinputval, currencycheck);
             if (validlabel === true) {
-                popnotify("error", T.fld.label.invalid);
+                popnotify("error", T.fld.label.invalid());
                 labelfield.val(label).select();
                 return
             }
@@ -2498,7 +2498,7 @@ function validateaddress(ad, vk) {
                 clear_savedurl();
                 return
             }
-            popnotify("error", T.err.confirmOwn);
+            popnotify("error", T.err.confirmOwn());
             return
         }
         popnotify("error", T.fld.address.invalid(addressinputval, currency));
@@ -2912,7 +2912,7 @@ function confirm_ms_newrequest() {
             ds_checkbox = thisdialog.find("#dontshowwrap"),
             ds_checked = ds_checkbox.data("checked");
         if (pk_checked == true) {} else {
-            popnotify("error", "Confirm privatekey ownership");
+            popnotify("error", T.err.confirmOwn());
             return
         }
         if (ds_checked == true) { // whitlist seed id
@@ -3499,7 +3499,7 @@ function submit_request_description() {
             notify(T.msg.requestSaved);
             return
         }
-        popnotify("error", T.err.descriptionRequired);
+        popnotify("error", T.err.descriptionRequired());
     })
 }
 
@@ -4944,7 +4944,7 @@ function check_intents(scheme) {
                 });
                 return;
             }
-            popnotify("error", T.msg.unableToDecodeQR);
+            popnotify("error", T.msg.unableToDecodeQR());
         }
     }
     if (proto.length < 1) {
