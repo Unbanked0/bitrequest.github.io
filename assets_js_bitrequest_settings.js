@@ -459,7 +459,7 @@ function backupdatabase() {
         alert_icon = $("#alert > span"),
         nr_changes = alert_icon.text(),
         alert_title = alert_icon.attr("title"),
-        alert_txt = (nr_changes == "!") ? "<span class='warning'>! " + alert_title + " </span>" : "<p>You have " + nr_changes + " changes in your app. Please backup your data.</p>",
+        alert_txt = (nr_changes == "!") ? "<span class='warning'>! " + alert_title + " </span>" : "<p>"+T.ttl.changesInApp(nr_changes) + ". Please backup your data.</p>",
         showhidechangelog = (gd_active === true) ? "display:none" : "display:block",
         changenotification = (gd_active === false && body.hasClass("haschanges")) ? alert_txt : "",
         ddat = [{

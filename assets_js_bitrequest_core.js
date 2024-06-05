@@ -1,4 +1,3 @@
-// TODO:I18N: I forgot, add an `i18n` attribute to generated html with the key if possible
 //globals
 const ls_support = check_local(),
     userAgent = navigator.userAgent || navigator.vendor || window.opera,
@@ -67,7 +66,7 @@ let scrollposition = 0,
 OmnI18n.onLocaleChange(function(newLanguage) {
     language = newLanguage;
     setlocales();
-})
+});
 
 if (has_ndef && !inframe) {
     ndef = new NDEFReader();
@@ -98,7 +97,10 @@ $(document).ready(function() {
     } else {
         html.addClass("noframe");
     }
+});
 
+
+OmnI18n.onLocaleChange(function(newLanguage) {    
     //some api tests first
     rendersettings(); //retrieve settings from localstorage (load first to retrieve apikey)
     if (ls_support) { //check for local storage support
@@ -117,7 +119,7 @@ $(document).ready(function() {
             checkphp();
         }
     } else {
-        let content = `<h2 class='icon-bin'>Sorry!</h2><p>${T.msg.noWebStore}</p>`;
+        let content = `<h2 class='icon-bin'>Sorry!</h2><p i18n="msg.noWebStore">${T.msg.noWebStore}</p>`;
         popdialog(content, "canceldialog");
     }
     $("#fixednav").html($("#relnav").html()); // copy nav
@@ -213,7 +215,6 @@ function setsymbols() { //fetch fiat currencies from fixer.io api
             setsymbols();
             return
         }
-        // TODO:I18N: Where is that text coming from?
         let content = "<h2 class='icon-bin'>Api call failed</h2><p class='doselect'>" + textStatus + "<br/>api did not respond<br/><br/><span id='proxy_dialog' class='ref'>Try other proxy</span></p>";
         popdialog(content, "canceldialog");
     })
@@ -255,7 +256,7 @@ function geterc20tokens_local() {
             storecoindata(data);
         }
     }).fail(function(jqXHR, textStatus, errorThrown) {
-        let content = `<h2 class='icon-bin'>Api call failed</h2><p class='doselect'>${T.err.fetchTokeninfo}</p>`;
+        let content = `<h2 class='icon-bin'>Api call failed</h2><p class='doselect' i18n="err.fetchTokeninfo">${T.err.fetchTokeninfo}</p>`;
         popdialog(content, "canceldialog");
     });
 }
@@ -1255,18 +1256,18 @@ function get_address_warning(id, address, pass_dat) {
     let seedstr = (pass_dat.xpubid) ? "Xpub" : T.fld.seed,
         rest_str = (!pass_dat.xpubid) ? (hasbip === true) ? "" : "<div id='rest_seed' class='ref' data-seedid='" + pass_dat.seedid + `'>${T.fld.seed.restore}</div>` : "";
     return $("<div class='formbox addwarning' id='" + id + "'>\
-        <h2 class='icon-warning'>" + T.msg.warning + "</h2>\
+        <h2 class='icon-warning' i18n='msg.warning'>" + T.msg.warning + "</h2>\
         <div class='popnotify'></div>\
         <p><strong>" + T.msg.missingSeed(seedstr, address) + "</strong></p>\
         <form class='addressform popform'>\
             <div class='inputwrap'>\
                 <div class='pk_wrap noselect'>\
                     <div id='pk_confirmwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div>\
-                    <span>" + T.fld.iOwn + "</span>\
+                    <span i18n='fld.iOwn'>" + T.fld.iOwn + "</span>\
                 </div>\
                 <div class='pk_wrap noselect'>\
                     <div id='dontshowwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div>\
-                    <span>" + T.fld.dontShowAgn + "</span>\
+                    <span i18n='fld.dontShowAgn'>" + T.fld.dontShowAgn + "</span>\
                 </div>" + rest_str +
         "</div>\
             <input type='submit' class='submit' value='OK'>\
@@ -1871,7 +1872,7 @@ function payment_lookup(request_dat) {
                     T.link.incomings(currency, blockexplorer) + "<span class='icon-new-tab'></a></strong></p>\
                 <div class='pk_wrap noselect'>\
                     <div id='dontshowwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div>\
-                    <span>" + T.fld.dontShowAgn + "</span>\
+                    <span i18n='fld.dontShowAgn'>" + T.fld.dontShowAgn + "</span>\
                 </div>\
             </div>\
             <div id='backupactions'>\
@@ -1930,12 +1931,12 @@ function recent_requests(recent_payments) {
     let addresslist = recent_requests_list(recent_payments);
     if (addresslist.length) {
         let content = "<div class='formbox'>\
-            <h2 class='icon-history'>" + T.fld.recentRequests + ":</h2>\
+            <h2 class='icon-history' i18n='fld.recentRequests'>" + T.fld.recentRequests + "</h2>\
             <div id='ad_info_wrap'>\
             <ul>" + addresslist + "</ul>\
             </div>\
             <div id='backupactions'>\
-                <div id='dismiss' class='customtrigger'>" + T.cmd.cancel + "</div>\
+                <div id='dismiss' class='customtrigger' i18n='cmd.cancel'>" + T.cmd.cancel + "</div>\
             </div>\
             </div>";
         popdialog(content, "triggersubmit");
@@ -2105,12 +2106,12 @@ function addaddress(ad, edit) {
         readonly = (edit === true) ? " readonly" : "",
         nopub = (test_derive === false) ? true : (is_xpub(currency) === false || has_xpub(currency) !== false),
         choose_wallet_str = "<span id='get_wallet' class='address_option' data-currency='" + currency + "'>" + T.cmd.noAddrYet(currency) + "</span>",
-        derive_seed_str = "<span id='option_makeseed' class='address_option' data-currency='" + currency + "'>" + T.cmd.address.genFromPhrase + "</span>",
+        derive_seed_str = "<span id='option_makeseed' class='address_option' data-currency='" + currency + "' i18n='cmd.address.genFromPhrase'>" + T.cmd.address.genFromPhrase + "</span>",
         options = (hasbip === true) ? choose_wallet_str : (test_derive === true && c_derive[currency]) ? (hasbip32(currency) === true) ? derive_seed_str : choose_wallet_str : choose_wallet_str,
         pnotify = (body.hasClass("showstartpage")) ? "<div class='popnotify' style='display:block'>" + options + "</div>" : "<div class='popnotify'></div>",
         scanqr = (hascam === true && edit === false) ? "<div class='qrscanner' data-currency='" + currency + "' data-id='address' title='scan qr-code'><span class='icon-qrcode'></span></div>" : "",
-        title = (edit === true) ? "<h2 class='icon-pencil'>" + T.cmd.label.edit + "</h2>" : "<h2>" + getcc_icon(ad.cmcid, cpid, ad.erc20) + T.cmd.address.add(currency) + "</h2>",
-        pk_checkbox = (edit === true) ? "" : "<div id='pk_confirm' class='noselect'><div id='pk_confirmwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div><span>" + T.fld.iOwn + "</span></div>",
+        title = (edit === true) ? "<h2 class='icon-pencil' i18n='cmd.label.edit'>" + T.cmd.label.edit + "</h2>" : "<h2>" + getcc_icon(ad.cmcid, cpid, ad.erc20) + T.cmd.address.add(currency) + "</h2>",
+        pk_checkbox = (edit === true) ? "" : "<div id='pk_confirm' class='noselect'><div id='pk_confirmwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div><span i18n='fld.iOwn'>" + T.fld.iOwn + "</span></div>",
         addeditclass = (edit === true) ? "edit" : "add",
         xpubclass = (nopub) ? " hasxpub" : " noxpub",
         xpubph = (nopub) ? T.fld.address.spec(currency) : T.fld.address.xpub,
@@ -2118,7 +2119,7 @@ function addaddress(ad, edit) {
         has_vk = (vk_val != ""),
         scanvk = (hascam === true) ? "<div class='qrscanner' data-currency='" + currency + "' data-id='viewkey' title='scan qr-code'><span class='icon-qrcode'></span></div>" : "",
         vk_box = (currency == "monero") ? (has_vk) ? "" : "<div class='inputwrap'><input type='text' class='vk_input' value='" + vk_val + "' placeholder='View key'>" + scanvk + "</div>" : "",
-        content = $("<div class='formbox form" + addeditclass + xpubclass + "' id='addressformbox'>" + title + pnotify + "<form id='addressform' class='popform'><div class='inputwrap'><input type='text' id='address_xpub_input' class='address' value='" + address + "' data-currency='" + currency + "' placeholder='" + xpubph + "'" + readonly + ">" + scanqr + "</div>" + vk_box + "<input type='text' class='addresslabel' value='" + label + "' placeholder='" + T.fld.label + "'>\
+        content = $("<div class='formbox form" + addeditclass + xpubclass + "' id='addressformbox'>" + title + pnotify + "<form id='addressform' class='popform'><div class='inputwrap'><input type='text' id='address_xpub_input' class='address' value='" + address + "' data-currency='" + currency + "' placeholder='" + xpubph + "'" + readonly + ">" + scanqr + "</div>" + vk_box + "<input type='text' class='addresslabel' value='" + label + "' placeholder='" + T.fld.label + "' i18n='placeholder: fld.label'>\
         <div id='ad_info_wrap' style='display:none'>\
             <ul class='td_box'>\
             </ul>\
@@ -2262,13 +2263,13 @@ function add_erc20() {
                         <div id='ac_options' class='options'>" + tokenlist + "</div>\
                     </div>\
                     <div id='erc20_inputs'>\
-                    <div class='inputwrap'><input type='text' class='address' value='' placeholder='" + T.fld.address + "'/>" + scanqr + "</div>\
-                    <input type='text' class='addresslabel' value='' placeholder='" + T.fld.label + "'/>\
+                    <div class='inputwrap'><input type='text' class='address' value='' placeholder='" + T.fld.address + "' i18n='placeholder: fld.address' />" + scanqr + "</div>\
+                    <input type='text' class='addresslabel' value='' placeholder='" + T.fld.label + "' i18n='placeholder: fld.label' />\
                     <div id='pk_confirm' class='noselect'>\
                         <div id='pk_confirmwrap' class='cb_wrap' data-checked='false'>\
                             <span class='checkbox'></span>\
                         </div>\
-                        <span>" + T.fld.iOwn + "</span>\
+                        <span i18n='fld.iOwn'>" + T.fld.iOwn + "</span>\
                     </div></div>\
                     <input type='submit' class='submit' value='OK'/>\
                 </form></div>").data(nodedata);
@@ -2783,24 +2784,26 @@ function showoptions(content, addclass, callback) {
     $("#optionsbox").html(content);
     body.addClass("blurmain_options");
 }
-// TODO:I18N Translated until here
+
 function lockscreen(timer) {
     let timeleft = timer - now(),
         cd = countdown(timeleft),
-        dstr = (cd.days) ? cd.days + " days<br/>" : "",
-        hstr = (cd.hours) ? cd.hours + " hours<br/>" : "",
-        mstr = (cd.minutes) ? cd.minutes + " minutes<br/>" : "",
-        sstr = (cd.seconds) ? cd.seconds + " seconds" : "",
-        cdown_str = dstr + hstr + mstr + sstr,
+        tstrs = [
+            cd.days && T.time.days(cd.days),
+            cd.hours && T.time.hours(cd.hours),
+            cd.minutes && T.time.minutes(cd.minutes),
+            cd.seconds && T.time.seconds(cd.seconds)
+        ],
+        cdown_str = tstrs.filter(s=>s).join('<br />'),
         attempts = $("#pinsettings").data("attempts"),
         has_seedid = (hasbip || cashier_seedid) ? true : false,
-        us_string = (has_seedid === true && attempts > 5) ? "<p id='seed_unlock'>Unlock with seed</p>" : "",
-        content = "<h1 id='lock_heading'>Bitrequest</h1><div id='lockscreen'><h2><span class='icon-lock'></span></h2><p class='tmua'>Too many unlock attempts</p>\
-        <p><br/>Please try again in:<br/>" + cdown_str + "</p>" + us_string +
+        us_string = (has_seedid === true && attempts > 5) ? "<p id='seed_unlock' i18n='cmd.unlockSeed'>" + T.cmd.unlock.seed + "</p>" : "",
+        content = "<h1 id='lock_heading'>Bitrequest</h1><div id='lockscreen'><h2><span class='icon-lock'></span></h2><p class='tmua' i18n='err.unlockSeed.tooMany'>" + T.err.unlockSeed.tooMany + "</p>\
+        <p><br/>" + T.err.unlockSeed.tryAgain + "<br/>" + cdown_str + "</p>" + us_string +
         "<div id='phrasewrap'>\
-            <p><br/>Enter your 12 word<br/>secret phrase:</p>\
+            <p i18n='pmpt.words12'>" + T.pmpt.words12 + "</p>\
                 <div id='bip39phrase' contenteditable='contenteditable' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' lang='en' class='noselect'></div>\
-                <div id='phrase_login' class='button'>Unlock</div>\
+                <div id='phrase_login' class='button' i18n='cmd.unlock'>" + T.cmd.unlock + "</div>\
             </div>\
         </div>";
     $("#optionspop").addClass("showpu active pin ontop");
@@ -2851,7 +2854,7 @@ function newrequest_alias() {
             active_currencies = currencylist.find("li").not(".hide"),
             active_currency_count = active_currencies.length;
         if (active_currency_count === 0) {
-            notify("no active currencies");
+            notify(T.err.currency.noActive);
             return
         }
         if (active_currency_count > 1) {
@@ -2933,7 +2936,7 @@ function showrequests() {
 function showrequests_inlne() {
     $(document).on("click", ".applist.pobox li .usedicon", function() {
         let address = $(this).prev("span").text(),
-            result = confirm("Show requests for " + address + "?");
+            result = confirm(T.cnf.showRequestsFor(address));
         if (result === true) {
             loadpage("?p=requests&filteraddress=" + address);
         }
@@ -2950,12 +2953,12 @@ function editaddresstrigger() {
 function removeaddress() {
     $(document).on("click", ".removeaddress", function(e) {
         e.preventDefault();
-        popdialog("<h2 class='icon-bin'>Remove address?</h2>", "removeaddressfunction", $(this));
+        popdialog("<h2 class='icon-bin' i18n='cnf.address.remove'>" + T.cnf.address.remove + "?</h2>", "removeaddressfunction", $(this));
     })
 }
 
 function removeaddressfunction(trigger) {
-    let result = confirm("Are you sure?");
+    let result = confirm(T.cnf.generic);
     if (result === true) {
         let optionslist = trigger.closest("ul#optionslist"),
             ad = optionslist.data(),
@@ -2982,7 +2985,7 @@ function removeaddressfunction(trigger) {
         new_address = null; // prevent double entries
         canceldialog();
         canceloptions();
-        notify("Address deleted 🗑");
+        notify(T.cmd.address.remove.done);
         saveaddresses(currency, true);
     }
 }
@@ -3013,7 +3016,7 @@ function showtransaction_trigger() {
                 if (invoice) {
                     let hash = invoice.hash;
                     if (hash) {
-                        let result = confirm("Open invoice: " + hash + "?");
+                        let result = confirm(T.cnf.openInvoice(hash));
                         if (result === true) {
                             let proxy = lightning.proxy_host,
                                 nid = lightning.nid,
@@ -3068,11 +3071,11 @@ function addressinfo() {
             (isxpub) ? (activepub && xpubid == activepub.key_id) : false,
             address = dd.address,
             a_wl = addr_whitelist(address),
-            restore = (isseed) ? (hasbip === true) ? "" : "<div id='rest_seed' class='ref' data-seedid='" + seedid + "'>Restore</div>" : "",
+            restore = (isseed) ? (hasbip === true) ? "" : "<div id='rest_seed' class='ref' data-seedid='" + seedid + "'>" + T.cmd.restore + "</div>" : "",
             srcval = (source) ? (active_src) ? source + " <span class='icon-checkmark'>" :
-            source + " (Unavailable)" + restore : "external",
+            source + " (" + T.msg.unavailable + ")" + restore : T.msg.external,
             d_index = dd.derive_index,
-            dpath = (bip32dat) ? bip32dat.root_path + d_index : "",
+            dpath = (bip32dat) ? T.msg.derivationPath + " " + bip32dat.root_path + d_index : "",
             purpose = dd.purpose;
         if (purpose) {
             let dsplit = dpath.split("/");
@@ -3083,25 +3086,25 @@ function addressinfo() {
             dd.bip32dat = bip32dat,
             dd.address = address;
         let cc_icon = getcc_icon(dd.cmcid, dd.ccsymbol + "-" + currency, dd.erc20),
-            dpath_str = (isseed) ? "<li><strong>Derivation path:</strong> " + dpath + "</li>" : "",
-            pk_verified = "Unknown <span class='icon-checkmark'></span>",
+            dpath_str = (isseed) ? "<li><strong>" + T.pmpt.derivationPath + "</strong> " + dpath + "</li>" : "",
+            pk_verified = T.msg.unknown + " <span class='icon-checkmark'></span>",
             vkobj = (dd.vk) ? vk_obj(dd.vk) : false,
-            vkdat = (vkobj) ? (isseed && active_src) ? "derive" : vkobj.vk : false,
-            pk_str = (vkdat) ? "<span id='show_vk' class='ref' data-vk='" + vkdat + "'>Show</span>" : (isseed) ? (active_src) ? "<span id='show_pk' class='ref'>Show</span>" : (a_wl === true) ? pk_verified : "Unknown" : pk_verified,
+            vkdat = (vkobj) ? (isseed && active_src) ? T.msg.derive : vkobj.vk : false,
+            pk_str = (vkdat) ? "<span id='show_vk' class='ref' data-vk='" + vkdat + "'>" + T.cmd.show + "</span>" : (isseed) ? (active_src) ? "<span id='show_pk' class='ref'>" + T.cmd.show + "</span>" : (a_wl === true) ? pk_verified : T.msg.unknown : pk_verified,
             content = $("<div id='ad_info_wrap'><h2>" + cc_icon + " <span>" + label + "</span></h2><ul>\
-                <li><strong>Address: </strong><span class='adbox adboxl select'>" + address + "</span>\
+                <li><strong>" + T.fld.address + ":</strong> <span class='adbox adboxl select'>" + address + "</span>\
                 <div id='qrcodea' class='qrwrap flex'><div class='qrcode'></div>" + cc_icon + "</div>\
                 </li>\
-                <li><strong>Source: </strong>" + srcval + "</li>" +
+                <li><strong>" + T.pmpt.source + "</strong> " + srcval + "</li>" +
                 dpath_str +
-                "<li><strong>Private key: </strong>" + pk_str +
+                "<li><strong>" + T.pmpt.privateKey + "</strong> " + pk_str +
                 "<div id='pk_span'>\
                     <div class='qrwrap flex'>\
                         <div id='qrcode' class='qrcode'></div>" + cc_icon + "</div>\
                         <p id='pkspan' class='adbox adboxl select' data-type='private key'></p>\
                 </div>\
                 </li>\
-                <li><div class='showtransactions ref'><span class='icon-eye'></span> Show transactions</div></li>\
+                <li><div class='showtransactions ref'><span class='icon-eye'></span> " + T.cmd.showTransactions + "</div></li>\
                 </ul>\
             </div>").data(dd);
         popdialog(content, "canceldialog");
@@ -3209,7 +3212,7 @@ function show_vk_cb(kd) {
 }
 
 function open_blockexplorer_url(be_link) {
-    let result = confirm("Open " + be_link + "?");
+    let result = confirm(T.cnf.openLink(be_link));
     if (result === true) {
         w_loc.href = be_link;
     }
@@ -3460,7 +3463,6 @@ function amountshort(amount, receivedamount, fiatvalue, iscrypto) {
         numberamount = (iscrypto === true) ? trimdecimals(amount_short, 5) : trimdecimals(amount_short, 2);
     return (isNaN(numberamount)) ? null : numberamount;
 }
-
 function editrequest() {
     $(document).on("click", ".editrequest", function() {
         let thisnode = $(this),
@@ -3468,13 +3470,13 @@ function editrequest() {
             requestlist = $("#" + thisrequestid),
             requesttitle = requestlist.data("requesttitle"),
             requesttitle_input = (requesttitle) ? requesttitle : "",
-            formheader = (requesttitle) ? "Edit" : "Enter",
+            formheader = (requesttitle) ? T.pmpt.edit : T.pmpt.enter,
             content = "\
             <div class='formbox' id='edit_request_formbox'>\
-                <h2 class='icon-pencil'>" + formheader + " description</h2>\
+                <h2 class='icon-pencil'>" + T.pmpt.description(formheader) + "</h2>\
                 <div class='popnotify'></div>\
                 <div class='popform'>\
-                    <input type='text' value='" + requesttitle_input + "' placeholder='description'/>\
+                    <input type='text' value='" + requesttitle_input + "' placeholder='" + T.pmpt.description + "'/>\
                     <input type='submit' class='submit' value='OK' data-requestid='" + thisrequestid + "'/>\
                 </div>\
             </div>";
@@ -3494,10 +3496,10 @@ function submit_request_description() {
                 "requesttitle": requesttitle_val
             }, true);
             canceldialog();
-            notify("Request saved");
+            notify(T.msg.requestSaved);
             return
         }
-        popnotify("error", "Description is a required field");
+        popnotify("error", T.err.descriptionRequired);
     })
 }
 
@@ -3555,7 +3557,7 @@ function receipt() {
                             "div": {
                                 "id": "canceldialog",
                                 "class": "customtrigger",
-                                "content": "CANCEL"
+                                "content": T.cmd.cancel
                             }
                         }
                     ]
@@ -3663,10 +3665,10 @@ function lnd_lookup_invoice(proxy, imp, hash, nid, pid, pw) {
             closeloader();
             return
         }
-        notify("Unable to fetch invoice");
+        notify(T.err.unableToFetchInvoice);
         closeloader();
     }).fail(function(jqXHR, textStatus, errorThrown) {
-        notify("Unable to fetch invoice");
+        notify(T.err.unableToFetchInvoice);
         closeloader();
     });
 }
@@ -3678,13 +3680,13 @@ function get_pdf_url(rqdat) {
         requesttitle = rqdat.requesttitle,
         ismonitored = rqdat.monitored,
         status = rqdat.status,
-        statustext = (status == "new") ? "Waiting for payment" : status,
+        statustext = (status == "new") ? T.msg.waitingForPayment : status,
         txhash = rqdat.txhash,
         lnhash = (txhash && txhash.slice(0, 9) == "lightning") ? true : false,
         lightning = rqdat.lightning,
         hybrid = (lightning && lightning.hybrid === true),
         paymenttimestamp = rqdat.paymenttimestamp,
-        ptsformatted = fulldateformat(new Date(paymenttimestamp - timezone), "en-us"),
+        ptsformatted = fulldateformat(new Date(paymenttimestamp - timezone), OmnI18n.locale),
         amount = rqdat.amount,
         fiatvalue = rqdat.fiatvalue,
         receivedamount = rqdat.receivedamount,
@@ -3707,8 +3709,8 @@ function get_pdf_url(rqdat) {
         utc = timestamp - timezone,
         localtime = (requestdate) ? requestdate - timezone : utc,
         localtimeobject = new Date(localtime),
-        requestdateformatted = fulldateformat(localtimeobject, "en-us"),
-        created = (requestdate) ? requestdateformatted : "unknown",
+        requestdateformatted = fulldateformat(localtimeobject, OmnI18n.locale),
+        created = (requestdate) ? requestdateformatted : T.msg.unknown,
         utc_format = fulldateformat(new Date(utc)),
         invd = {},
         lnd_string = (lnhash) ? " (lightning)" : "";
@@ -3767,19 +3769,11 @@ function countdown(timestamp) {
 }
 
 function countdown_format(cd) {
-    let days = cd.days,
-        hours = cd.hours,
-        minutes = cd.minutes,
-        seconds = cd.seconds,
-        daynode = (days) ? (days < 2) ? days + " day" : days + " days" : "",
-        hs = (days) ? ", " : "",
-        hournode = (hours) ? (hours < 2) ? hs + hours + " hour" : hs + hours + " hours" : "",
-        ms = (hours) ? ", " : "",
-        minutenode = (minutes) ? (minutes < 2) ? ms + minutes + " minute" : ms + minutes + " minutes" : "",
-        ss = (minutes) ? " and " : "",
-        secondnode = (seconds) ? ss + seconds + " seconds" : "",
-        result = (cd) ? daynode + hournode + minutenode + secondnode : false;
-    return result;
+    if(!cd) return false;
+    let nodes = ['days', 'hours', 'minutes', 'seconds']
+            .map((key) => cd[key] && T.times[key](cd[key]))
+            .filter((node) => !!node);
+    return T.format.list(nodes);
 }
 
 // ** Page rendering **
@@ -3819,19 +3813,19 @@ function buildsettings() {
     $.each(br_config.app_settings, function(i, value) {
         let setting_id = value.id,
             setting_li = (setting_id == "heading") ? $("<li class='set_heading'>\
-              <h2>" + value.heading + "</h2>\
+                <h2>" + value.heading + "</h2>\
         </li>") :
             $("<li class='render' id='" + setting_id + "'>\
-              <div class='liwrap iconright'>\
-                 <span class='" + value.icon + "'></span>\
-                 <div class='atext'>\
-                    <h2>" + value.heading + "</h2>\
-                    <p>" + value.selected + "</p>\
-                 </div>\
-                 <div class='iconbox'>\
-                     <span class='icon-pencil'></span>\
+            <div class='liwrap iconright'>\
+                <span class='" + value.icon + "'></span>\
+                <div class='atext'>\
+                <h2>" + value.heading + "</h2>\
+                <p>" + value.selected + "</p>\
                 </div>\
-              </div>\
+                <div class='iconbox'>\
+                    <span class='icon-pencil'></span>\
+                </div>\
+            </div>\
         </li>");
         setting_li.data(value).appendTo(appsettingslist);
     });
@@ -3937,21 +3931,22 @@ function buildpage(cd, ini) {
         let settingspage = (has_settings === true) ? "\
         <div class='page' id='" + currency + "_settings' data-erc20='" + erc20 + "'>\
             <div class='content'>\
-                <h2 class='heading'>" + getcc_icon(cmcid, cpid, erc20) + " " + currency + " settings</h2>\
+                <h2 class='heading'>" + getcc_icon(cmcid, cpid, erc20) + " " + T.pmpt.settings(currency) + "</h2>\
                 <ul class='cc_settinglist settinglist applist listyle2'></ul>\
                 <div class='reset_cc_settings button' data-currency='" + currency + "'>\
-                    <span>Reset</span>\
+                    <span>" + T.cmd.reset + "</span>\
                 </div>\
             </div>\
-        </div>" : "";
-        let settingsbutton = (has_settings === true) ? "<div data-rel='?p=" + currency + "_settings' class='self icon-cog'></div>" : "",
-            sendbttn = (hasbip === true) ? "<div class='button send' data-currency='" + currency + "'><span class='icon-telegram'>Send</span></div>" : "",
-            currency_page = $("<div class='page' id='" + currency + "'>\
+        </div>" : "",
+            settingsbutton = (has_settings === true) ? "<div data-rel='?p=" + currency + "_settings' class='self icon-cog'></div>" : "",
+            sendbttn = (hasbip === true) ? "<div class='button send' data-currency='" + currency + "'><span class='icon-telegram'>" + T.cmd.send + "</span></div>" : "",
+            currency_page = $("\
+        <div class='page' id='" + currency + "'>\
             <div class='content'>\
                 <h2 class='heading'>" + getcc_icon(cmcid, cpid, erc20) + " " + currency + settingsbutton + "</h2>\
                 <ul class='applist listyle2 pobox' data-currency='" + currency + "'>\
-                    <div class='endli'><div class='button addaddress' data-currency='" + currency + "'><span class='icon-plus'>Add address</span></div>" + sendbttn + "</div>\
-                    <div class='addone' data-currency='" + currency + "'>Add one</div>\
+                    <div class='endli'><div class='button addaddress' data-currency='" + currency + "'><span class='icon-plus'>" + T.cmd.address.add + "</span></div>" + sendbttn + "</div>\
+                    <div class='addone' data-currency='" + currency + "'>" + T.pmpt.addOne + "</div>\
                 </ul>\
             </div>\
         </div>" + settingspage);
@@ -4027,7 +4022,7 @@ function appendaddress(currency, ad) {
             <div class='addressinfo liwrap iconright2'>\
                 <div class='atext'>\
                     <h2><span>" + ad.label + "</span></h2>\
-                    <p class='address'>" + ad_icon + "<span class='select'>" + address + "</span><span class='usedicon icon-arrow-up-right2' title='Used'></span></p>\
+                    <p class='address'>" + ad_icon + "<span class='select'>" + address + "</span><span class='usedicon icon-arrow-up-right2' title='" + T.ttl.used + "'></span></p>\
                 </div>\
                 <div class='iconbox'>\
                     <span class='checkbox toggleaddress'></span>\
@@ -4094,10 +4089,10 @@ function appendrequest(rd) {
         typetext = (checkout) ? "online purchase" : (local) ? "point of sale" : requesttype,
         requesticon = (checkout) ? " typeicon icon-cart" : (local) ? " icon-qrcode" : (incoming === true) ? " typeicon icon-arrow-down-right2" : " typeicon icon-arrow-up-right2",
         typeicon = "<span class='inout" + requesticon + "'></span> ",
-        statusicon = "<span class='icon-checkmark' title='Confirmed transaction'></span>\
-            <span class='icon-clock' title='pending transaction'></span>\
-            <span class='icon-eye-blocked' title='unmonitored transaction'></span>\
-            <span class='icon-wifi-off' title='No network'></span>",
+        statusicon = "<span class='icon-checkmark' title='" + T.ttl.confirmedTransaction + "'></span>\
+            <span class='icon-clock' title='" + T.ttl.pendingTransaction + "'></span>\
+            <span class='icon-eye-blocked' title='" + T.ttl.unmonitoredTransaction + "'></span>\
+            <span class='icon-wifi-off' title='" + T.ttl.noNetwork + "'></span>";
         requesttitlestring = (rqdata || requesttitle) ? (incoming === true) ? requestname : requesttitle_short : "<b>" + amount_rounded + "</b> " + currencyname + statusicon,
         requestnamestring = (rqdata || requesttitle) ? (incoming === true) ? "<strong>'" + requesttitle_short + "'</strong> (" + amount_rounded + " " + currencyname + ")" + statusicon : amount_rounded + " " + currencyname + statusicon : "",
         rqdataparam = (rqdata) ? "&d=" + rqdata : "",
@@ -4109,47 +4104,44 @@ function appendrequest(rd) {
         isexpired = (status == "expired" || (now() - localtime) >= expirytime && (lnd_expire || status == "new" || insufficient === true)),
         expiredclass = (isexpired === true) ? " expired" : "",
         localtimeobject = new Date(localtime),
-        requestdateformatted = fulldateformat(localtimeobject, "en-us"),
-        timeformat = "<span class='rq_month'>" + localtimeobject.toLocaleString("en-us", {
+        requestdateformatted = fulldateformat(localtimeobject, OmnI18n.locale),
+        timeformat = "<span class='rq_month'>" + localtimeobject.toLocaleString(OmnI18n.locale, {
             "month": "short"
         }) + "</span> <span class='rq_day'>" + localtimeobject.getDate() + "</span>",
-        ptsformatted = fulldateformat(new Date(paymenttimestamp - timezone), "en-us", true),
+        ptsformatted = fulldateformat(new Date(paymenttimestamp - timezone), OmnI18n.locale, true),
         amount_short_rounded = amountshort(amount, receivedamount, fiatvalue, iscrypto),
-        amount_short_span = (insufficient === true) ? " (" + amount_short_rounded + " " + uoa_upper + " short)" : "",
+        amount_short_span = (insufficient === true) ? " (" + amount_short_rounded + " " + uoa_upper + " " + T.ttl.short + ")" : "",
         amount_short_cc_span = (iscrypto === true) ? amount_short_span : "",
-        created = (requestdate) ? requestdateformatted : "<strong>unknown</strong>",
-        fiatvaluebox = (iscrypto === true || !fiatvalue) ? "" : "<li class='payday pd_fiat'><strong>Fiat value on<span class='pd_fiat'> " + ptsformatted + "</span> :</strong><span class='fiatvalue'> " + fiatvalue_rounded + "</span> " + currencyname + "<div class='show_as amountshort'>" + amount_short_span + "</div></li>",
-        paymentdetails = "<li class='payday pd_paydate'><strong>Paid on:</strong><span class='paydate'> " + ptsformatted + "</span></li><li class='receivedamount'><strong>Amount received:</strong><span> " + receivedamount_rounded + "</span> " + payment + "<div class='show_as amountshort'>" + amount_short_cc_span + "</div></li>" + fiatvaluebox,
-        requestnamebox = (incoming === true) ? (rqdata) ? "<li><strong>From:</strong> " + requestname + "</li>" : "<li><strong>From: unknown</strong></li>" : "",
-        requesttitlebox = (requesttitle) ? "<li><strong>Title:</strong> '<span class='requesttitlebox'>" + requesttitle + "</span>'</li>" : "",
-        ismonitoredspan = (ismonitored === false) ? " (unmonitored transaction)" : "",
-        timestampbox = (incoming === true) ? "<li><strong>Created:</strong> " + created + "</li><li><strong>First viewed:</strong> " + fulldateformat(new Date(utc), "en-us") + "</li>" :
-        (outgoing === true) ? "<li><strong>Request send on:</strong> " + requestdateformatted + "</li>" :
-        (local === true) ? "<li><strong>Created:</strong> " + requestdateformatted + "</li>" : "",
-        paymenturl = "&address=" + address + rqdataparam + rqmetaparam + "&requestid=" + requestid,
-        islabel = $("main #" + payment + " li[data-address='" + address + "']").data("label"),
-        requestlabel = (islabel) ? " <span class='requestlabel'>(" + islabel + ")</span>" : "",
-        conf_box = (ismonitored === false) ? "<div class='txli_conf' data-conf='0'><span>Unmonitored transaction</span></div>" :
-        (conf > 0) ? "<div class='txli_conf'><div class='confbar'></div><span>" + conf + " / " + set_confirmations + " confirmations</span></div>" :
-        (conf === 0) ? "<div class='txli_conf' data-conf='0'><div class='confbar'></div><span>Unconfirmed transaction<span></div>" : "",
-        view_tx_markup = (lnhash) ? "<li><strong class='show_tx'><span class='icon-power'></span><span class='ref'>View invoice</span></strong></li>" : (txhash) ? "<li><strong class='show_tx'><span class='icon-eye'></span>View on blockchain</strong></li>" : "",
-        statustext = (ismonitored === false) ? "" : (status == "new") ? "Waiting for payment" : status,
-        src_html = (source) ? "<span class='src_txt'>source: " + source + "</span><span class='icon-wifi-off'></span><span class='icon-connection'></span>" : "",
+        created = (requestdate) ? requestdateformatted : "<strong>" + T.ttl.unknown + "</strong>",
+        fiatvaluebox = (iscrypto === true || !fiatvalue) ? "" : "<li class='payday pd_fiat'><strong>" + T.ttl.fiatValueOn + "<span class='pd_fiat'> " + ptsformatted + "</span>:</strong><span class='fiatvalue'> " + fiatvalue_rounded + "</span> " + currencyname + "<div class='show_as amountshort'>" + amount_short_span + "</div></li>",
+        paymentdetails = "<li class='payday pd_paydate'><strong>" + T.ttl.paidOn + "</strong>:<span class='paydate'> " + ptsformatted + "</span></li><li class='receivedamount'><strong>" + T.ttl.amountReceived + "</strong>:<span> " + receivedamount_rounded + "</span> " + payment + "<div class='show_as amountshort'>" + amount_short_cc_span + "</div></li>" + fiatvaluebox,
+        requestnamebox = (incoming === true) ? (rqdata) ? "<li><strong>" + T.ttl.from + "</strong>: " + requestname + "</li>" : "<li><strong>" + T.ttl.from + ": " + T.ttl.unknown + "</strong></li>" : "",
+        requesttitlebox = (requesttitle) ? "<li><strong>" + T.ttl.title + "</strong>: '<span class='requesttitlebox'>" + requesttitle + "</span>'</li>" : "",
+        ismonitoredspan = (ismonitored === false) ? " (" + T.ttl.unmonitoredTransaction + ")" : "",
+        timestampbox = (incoming === true) ? "<li><strong>" + T.ttl.created + "</strong>: " + created + "</li><li><strong>" + T.ttl.firstViewed + "</strong>: " + fulldateformat(new Date(utc), OmnI18n.locale) + "</li>" :
+            (outgoing === true) ? "<li><strong>" + T.ttl.requestSendOn + "</strong>: " + requestdateformatted + "</li>" :
+            (local === true) ? "<li><strong>" + T.ttl.created + "</strong>: " + requestdateformatted + "</li>" : "",
+        conf_box = (ismonitored === false) ? "<div class='txli_conf' data-conf='0'><span>" + T.ttl.unmonitoredTransaction + "</span></div>" :
+            (conf > 0) ? "<div class='txli_conf'><div class='confbar'></div><span>" + conf + " / " + set_confirmations + " " + T.ttl.confirmations + "</span></div>" :
+            (conf === 0) ? "<div class='txli_conf' data-conf='0'><div class='confbar'></div><span>" + T.ttl.unconfirmedTransaction + "<span></div>" : "",
+        view_tx_markup = (lnhash) ? "<li><strong class='show_tx'><span class='icon-power'></span><span class='ref'>" + T.btn.viewInvoice + "</span></strong></li>" : (txhash) ? "<li><strong class='show_tx'><span class='icon-eye'></span>" + T.btn.viewOnBlockchain + "</strong></li>" : "",
+        statustext = (ismonitored === false) ? "" : (status == "new") ? T.msg.waitingForPayment : status,
+        src_html = (source) ? "<span class='src_txt'>" + T.ttl.source + ": " + source + "</span><span class='icon-wifi-off'></span><span class='icon-connection'></span>" : "",
         iscryptoclass = (iscrypto === true) ? "" : " isfiat",
-        archivebutton = (showarchive === true) ? "<div class='icon-folder-open' title='archive request'></div>" : "",
+        archivebutton = (showarchive === true) ? "<div class='icon-folder-open' title='" + T.ttl.archiveRequest + "'></div>" : "",
         render_archive = (txhistory && (pending == "no" || archive === true)),
-        tl_text = (render_archive === true) ? "Transactions:" : "",
-        edit_request = (local === true) ? "<div class='editrequest icon-pencil' title='edit request' data-requestid='" + requestid + "'></div>" : "",
-        pid_li = (payment_id) ? "<li><strong>Payment ID:</strong> <span class='select' data-type='payment ID'>" + payment_id + "</span></li>" : "",
-        ia_li = (xmr_ia) ? "<li><p class='address'><strong>Integrated Address:</strong> <span class='requestaddress select'>" + xmr_ia + "</span></p></li>" : "",
+        tl_text = (render_archive === true) ? T.ttl.transactions : "",
+        edit_request = (local === true) ? "<div class='editrequest icon-pencil' title='" + T.ttl.editRequest + "' data-requestid='" + requestid + "'></div>" : "",
+        pid_li = (payment_id) ? "<li><strong>" + T.ttl.paymentID + "</strong>: <span class='select' data-type='payment ID'>" + payment_id + "</span></li>" : "",
+        ia_li = (xmr_ia) ? "<li><p class='address'><strong>" + T.ttl.integratedAddress + "</strong>: <span class='requestaddress select'>" + xmr_ia + "</span></p></li>" : "",
         ln_emoji = (lnhash) ? " <span class='icon-power'></span>" : "",
         ln_logo = "<img src='img_logos_btc-lnd.png' class='cmc_icon'><img src='img_logos_btc-lnd.png' class='cmc_icon'>",
         cclogo = getcc_icon(cmcid, cpid, erc20) + getcc_icon(cmcid, cpid, erc20),
         cc_logo = (lightning) ? (txhash && !lnhash) ? cclogo : ln_logo : cclogo,
-        rc_address_title = (hybrid) ? "Fallback address" : "Receiving Address",
-        address_markup = (lightning && (lnhash || hybrid === false)) ? "" : "<li><p class='address'><strong>" + rc_address_title + ":</strong> <span class='requestaddress select'>" + address + "</span>" + requestlabel + "</p></li>",
+        rc_address_title = (hybrid) ? T.ttl.fallbackAddress : T.ttl.receivingAddress,
+        address_markup = (lightning && (lnhash || hybrid === false)) ? "" : "<li><p class='address'><strong>" + rc_address_title + "</strong>: <span class='requestaddress select'>" + address + "</span>" + requestlabel + "</p></li>",
         network = getnetwork(source),
-        source_markup = (network) ? "<li><p><strong>Network:</strong> " + network + "</p></li>" : "",
+        source_markup = (network) ? "<li><p><strong>" + T.ttl.network + "</strong>: " + network + "</p></li>" : "",
         new_requestli = $("<li class='rqli " + requesttypeclass + expiredclass + lnclass + "' id='" + requestid + "' data-cmcid='" + cmcid + "' data-status='" + status + "' data-address='" + address + "' data-pending='" + pending + "' data-iscrypto='" + iscrypto + "'>\
             <div class='liwrap iconright'>" + cc_logo +
             "<div class='atext'>\
@@ -4159,30 +4151,30 @@ function appendrequest(rd) {
                 <p class='rq_date' title='" + requestdateformatted + "'>" + timeformat + "</p><br/>\
                 <div class='pmetastatus' data-count='0'>+ 0</div>\
                 <div data-rel='" + paymenturl + "' class='payrequest button" + iscryptoclass + "'>\
-                    <span class='icon-qrcode'>Pay</span>\
+                    <span class='icon-qrcode'>" + T.btn.pay + "</span>\
                 </div>\
             </div>\
             <div class='moreinfo'>\
                 <div class='req_actions'>\
                     <div data-rel='" + paymenturl + "' class='icon-qrcode" + iscryptoclass + "'></div>\
-                    <div class='icon-bin' title='delete'></div>" +
+                    <div class='icon-bin' title='" + T.ttl.delete + "'></div>" +
             archivebutton +
-            "<div class='icon-undo2' title='unarchive request'></div>\
-                    <div class='icon-info' title='show info'></div>" + edit_request + "</div>\
+            "<div class='icon-undo2' title='" + T.ttl.unarchiveRequest + "'></div>\
+                    <div class='icon-info' title='" + T.ttl.showInfo + "'></div>" + edit_request + "</div>\
                 <ul class='metalist'>\
-                    <li class='cnamemeta'><strong>Currency:</strong> " + payment + ln_emoji + "</li>" +
+                    <li class='cnamemeta'><strong>" + T.ttl.currency + "</strong>: " + payment + ln_emoji + "</li>" +
             requestnamebox +
             requesttitlebox +
-            "<li><strong>Amount:</strong> " + amount_rounded + " " + uoa_upper + "</li>\
-                    <li class='meta_status' data-conf='" + conf + "'><strong>Status:</strong><span class='status'> " + statustext + "</span> " + conf_box + "</li>\
-                    <li><strong>Type:</strong> " + typetext + ismonitoredspan + "</li>" +
+            "<li><strong>" + T.ttl.amount + "</strong>: " + amount_rounded + " " + uoa_upper + "</li>\
+                    <li class='meta_status' data-conf='" + conf + "'><strong>" + T.ttl.status + "</strong>: <span class='status'> " + statustext + "</span> " + conf_box + "</li>\
+                    <li><strong>" + T.ttl.type + "</strong>: " + typetext + ismonitoredspan + "</li>" +
             timestampbox +
             paymentdetails +
             address_markup +
             source_markup +
             pid_li +
             ia_li +
-            "<li class='receipt'><p><span class='icon-file-pdf' title='View receipt'/>Receipt</p></li>" + view_tx_markup +
+            "<li class='receipt'><p><span class='icon-file-pdf' title='" + T.ttl.viewReceipt + "'/>" + T.ttl.receipt + "</p></li>" + view_tx_markup +
             "</ul>\
                 <ul class='transactionlist'>\
                     <h2>" + tl_text + "</h2>\
@@ -4191,10 +4183,10 @@ function appendrequest(rd) {
             </div>\
             <div class='brstatuspanel flex'>\
                 <img src='" + c_icons("confirmed") + "'>\
-                <h2>Payment " + direction + "</h2>\
+                <h2>" + T.ttl.payment + " " + direction + "</h2>\
             </div>\
             <div class='brmarker'></div>\
-            <div class='expired_panel'><h2>Expired</h2></div>\
+            <div class='expired_panel'><h2>" + T.ttl.expired + "</h2></div>\
         </li>");
     new_requestli.data(rd).prependTo(requestlist);
     if (render_archive === true) {
@@ -4311,7 +4303,7 @@ function resetchanges() {
     changes = {};
     savechangesstats();
     body.removeClass("haschanges");
-    $("#alert > span").text("0").attr("title", "You have 0 changes in your app");
+    $("#alert > span").text("0").attr("title", T.ttl.changesInApp(0));
 }
 
 function savechangesstats() {
@@ -4334,7 +4326,7 @@ function change_alert() {
     }
     let total_changes = get_total_changes();
     if (total_changes > 0) {
-        $("#alert > span").text(total_changes).attr("title", "You have " + total_changes + " changes in your app");
+        $("#alert > span").text(total_changes).attr("title", T.ttl.changesInApp(total_changes));
         setTimeout(function() {
             body.addClass("haschanges");
         }, 2500);
@@ -4463,7 +4455,7 @@ function get_alchemy_apikey() {
 function proxy_alert(version) {
     if (version) {
         body.addClass("haschanges");
-        $("#alert > span").text("!").attr("title", "Please update your proxy server " + version + " > " + proxy_version);
+        $("#alert > span").text("!").attr("title", ttl.plzUpdate(version, proxy_version));
     }
 }
 
@@ -4501,7 +4493,7 @@ function copytoclipboard(content, type) {
     let copy_api = navigator.clipboard;
     if (copy_api) {
         navigator.clipboard.writeText(content);
-        notify(type + " copied to clipboard", 2500, "no");
+        notify(T.msg.copiedToClipboard(type), 2500, "no");
         return
     }
     copycontent.val(content);
@@ -4509,13 +4501,14 @@ function copytoclipboard(content, type) {
     try {
         let success = document.execCommand("copy");
         if (success) {
-            notify(type + " copied to clipboard", 2500, "no");
+            notify(T.msg.copiedToClipboard(type), 2500, "no");
         } else {
-            notify("Unable to copy " + type, 2500, "no");
+            notify(T.msg.unableToCopy(type), 2500, "no");
         }
     } catch (err) {
-        notify("Unable to copy " + type, 2500, "no");
+        notify(T.msg.unableToCopy(type), 2500, "no");
     }
+
     copycontent.val("").data({
         "type": false
     }).blur();
@@ -4565,59 +4558,58 @@ function all_pinpanel(cb, top) {
     showoptions(content, "pin" + topclass);
 }
 
-function pinpanel(pinclass, pincb) {
-    let makeclass = (pinclass === undefined) ? "" : pinclass,
-        headertext = (haspin() === true) ? "Please enter your pin" : "Create a 4-digit pin";
-    return $("<div id='pinfloat' class='enterpin" + makeclass + "'>\
-        <p id='pintext'>" + headertext + "</p>\
-        <p id='confirmpin'>Confirm your pin</p>\
-        <input id='pininput' type='password' readonly='readonly'/>\
-        <input id='validatepin' type='password' readonly='readonly'/>\
-        <div id='pinkeypad'>\
-            <div id='pin1' class='pinpad flex'>\
-                <span class='pincell'>1</span>\
-            </div>\
-            <div id='pin2' class='pinpad'>\
-                <span class='pincell'>2</span>\
-            </div>\
-            <div id='pin3' class='pinpad'>\
-                <span class='pincell'>3</span>\
-            </div><br>\
-            <div id='pin4' class='pinpad'>\
-                <span class='pincell'>4</span>\
-            </div>\
-            <div id='pin5' class='pinpad'>\
-                <span class='pincell'>5</span>\
-            </div>\
-            <div id='pin6' class='pinpad'>\
-                <span class='pincell'>6</span>\
-            </div><br>\
-            <div id='pin7' class='pinpad'>\
-                <span class='pincell'>7</span>\
-            </div>\
-            <div id='pin8' class='pinpad'>\
-                <span class='pincell'>8</span>\
-            </div>\
-            <div id='pin9' class='pinpad'>\
-                <span class='pincell'>9</span>\
-            </div><br>\
-            <div id='locktime' class='pinpad'>\
-                <span class='icomoon'></span>\
-            </div>\
-            <div id='pin0' class='pinpad'>\
-                <span class='pincell'>0</span>\
-            </div>\
-            <div id='pinback' class='pinpad'>\
-                <span class='icomoon'></span>\
-            </div>\
+function pinpanel(pinclass, pincb) {let makeclass = (pinclass === undefined) ? "" : pinclass,
+    headertext = (haspin() === true) ? T.msg.enterPin : T.msg.createPin;
+return $("<div id='pinfloat' class='enterpin" + makeclass + "'>\
+    <p id='pintext'>" + headertext + "</p>\
+    <p id='confirmpin'>" + T.msg.confirmPin + "</p>\
+    <input id='pininput' type='password' readonly='readonly'/>\
+    <input id='validatepin' type='password' readonly='readonly'/>\
+    <div id='pinkeypad'>\
+        <div id='pin1' class='pinpad flex'>\
+            <span class='pincell'>1</span>\
         </div>\
-        <div id='pin_admin' class='flex'>\
-            <div id='pin_admin_float'>\
-                <div id='lock_time'><span class='icomoon'></span> Lock time</div>\
-                <div id='reset_pin'>Reset pin</div>\
-            </div>\
+        <div id='pin2' class='pinpad'>\
+            <span class='pincell'>2</span>\
         </div>\
-    </div>").data("pincb", pincb);
+        <div id='pin3' class='pinpad'>\
+            <span class='pincell'>3</span>\
+        </div><br>\
+        <div id='pin4' class='pinpad'>\
+            <span class='pincell'>4</span>\
+        </div>\
+        <div id='pin5' class='pinpad'>\
+            <span class='pincell'>5</span>\
+        </div>\
+        <div id='pin6' class='pinpad'>\
+            <span class='pincell'>6</span>\
+        </div><br>\
+        <div id='pin7' class='pinpad'>\
+            <span class='pincell'>7</span>\
+        </div>\
+        <div id='pin8' class='pinpad'>\
+            <span class='pincell'>8</span>\
+        </div>\
+        <div id='pin9' class='pinpad'>\
+            <span class='pincell'>9</span>\
+        </div><br>\
+        <div id='locktime' class='pinpad'>\
+            <span class='icomoon'></span>\
+        </div>\
+        <div id='pin0' class='pinpad'>\
+            <span class='pincell'>0</span>\
+        </div>\
+        <div id='pinback' class='pinpad'>\
+            <span class='icomoon'></span>\
+        </div>\
+    </div>\
+    <div id='pin_admin' class='flex'>\
+        <div id='pin_admin_float'>\
+            <div id='lock_time'><span class='icomoon'></span> " + T.ttl.lockTime + "</div>\
+            <div id='reset_pin'>" + T.btn.resetPin + "</div>\
+        </div>\
+    </div>\
+</div>").data("pincb", pincb);
 }
 
 function switchpanel(switchmode, mode) {
@@ -4660,7 +4652,7 @@ function sleep() {
 }
 
 function vu_block() {
-    notify("Not allowed in cashier mode");
+    notify(T.err.noInCashier);
     playsound(funk);
 }
 
@@ -4728,13 +4720,12 @@ function detectapp() {
 
 function getapp(type) {
     let app_panel = $("#app_panel");
-    app_panel.html("");
-    let android = (type == "android"),
-        button = (android === true) ? fetch_aws("img_button-playstore.png") : fetch_aws("img_button-appstore.png"),
-        url = (android === true) ? "https://play.google.com/store/apps/details?id=" + androidpackagename + "&pcampaignid=fdl_long&url=" + approot + encodeURIComponent(w_loc.search) : "https://apps.apple.com/app/id1484815377?mt=8",
-        panelcontent = "<h2>Download the app</h2>\
-            <a href='" + url + "' class='exit store_bttn'><img src='" + button + "'></a><br/>\
-            <div id='not_now'>Not now</div>";
+    app_panel.html("");let android = (type == "android"),
+    button = (android === true) ? fetch_aws("img_button-playstore.png") : fetch_aws("img_button-appstore.png"),
+    url = (android === true) ? "https://play.google.com/store/apps/details?id=" + androidpackagename + "&pcampaignid=fdl_long&url=" + approot + encodeURIComponent(w_loc.search) : "https://apps.apple.com/app/id1484815377?mt=8",
+    panelcontent = "<h2>" + T.ttl.downloadApp + "</h2>\
+        <a href='" + url + "' class='exit store_bttn'><img src='" + button + "'></a><br/>\
+        <div id='not_now'>" + T.msg.notNow + "</div>";
     app_panel.html(panelcontent);
     setTimeout(function() {
         body.addClass("getapp");
@@ -4934,9 +4925,9 @@ function check_intents(scheme) {
     let scheme_url = atob(scheme),
         proto = scheme_url.split(":")[0];
     if (proto == "eclair" || proto == "acinq" || proto == "lnbits") {
-        let content = "<h2 class='icon-warning'>" + proto + ": connect not available at the moment</h2>";
+        let content = "<h2 class='icon-warning'>" + proto + ": " + T.msg.connectNotAvailable + "</h2>";
         popdialog(content, "canceldialog");
-        return
+        return;
     }
     if (proto == "lndconnect" || proto == "c-lightning-rest") {
         let imp = (proto == "lndconnect") ? "lnd" : (proto == "c-lightning-rest") ? "c-lightning" : proto,
@@ -4951,21 +4942,20 @@ function check_intents(scheme) {
                     "macaroon": macaroon,
                     "imp": imp
                 });
-                return
+                return;
             }
-            popnotify("error", "unable to decode qr");
+            popnotify("error", T.msg.unableToDecodeQR);
         }
-        return
     }
     if (proto.length < 1) {
-        let content = "<h2 class='icon-warning'>Invalid URL scheme</h2>";
+        let content = "<h2 class='icon-warning'>" + T.msg.invalidURLScheme + "</h2>";
         popdialog(content, "canceldialog");
-        return
+        return;
     }
     if (proto && proto.length > 0) {
-        let content = "<h2 class='icon-warning'>URL scheme '" + proto + ":' is not supported</h2>";
+        let content = "<h2 class='icon-warning'>" + T.msg.urlSchemeNotSupported(proto) + " '" + proto + ":'</h2>";
         popdialog(content, "canceldialog");
-        return
+        return;
     }
 }
 
@@ -5001,10 +4991,10 @@ function expand_shoturl(i_param) {
                     let status = data.status;
                     if (status) {
                         if (status == "file not found") {
-                            let content = "<h2 class='icon-warning'>Request not found or expired</h2>";
+                            let content = "<h2 class='icon-warning'>" + T.msg.requestNotFoundOrExpired + "</h2>";
                             popdialog(content, "canceldialog");
                             closeloader();
-                            return
+                            return;
                         }
                         if (status == "file exists") {
                             let longurl = data.sharedurl;
@@ -5012,16 +5002,16 @@ function expand_shoturl(i_param) {
                                 let to_localurl = makelocal(longurl);
                                 ios_redirections(to_localurl);
                                 br_set_session("longurl_" + i_param, to_localurl);
-                                return
+                                return;
                             }
                         }
                     }
                 }
             }).fail(function(jqXHR, textStatus, errorThrown) {
-                let content = "<h2 class='icon-warning'>Failed to fetch request</h2>";
+                let content = "<h2 class='icon-warning'>" + T.msg.failedToFetchRequest + "</h2>";
                 popdialog(content, "canceldialog");
                 closeloader();
-                return
+                return;
             });
         }
     }
@@ -5094,10 +5084,11 @@ function ln_connect(gets) {
             console.log("Unable to set data");
             return
         }
-        notify("Invalid macaroon format");
-        return
+        
+        notify(T.msg.invalidMacaroonFormat);
+        return;
     }
-    notify("Invalid format");
+    notify(T.msg.invalidFormat);
 }
 
 function click_pop(fn) {

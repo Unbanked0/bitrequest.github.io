@@ -3045,3 +3045,11 @@ html[data-role='cashier'] #show_vk {
 #locales-list button.selected {
 	background-color: rgba(255, 255, 255, 0.15);
 }
+
+.flag .flag-main {
+	margin-right: -0.8em;
+}
+
+.flag .flag-loc {
+	font-size: .6em;
+}

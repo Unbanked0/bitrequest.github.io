@@ -3,74 +3,6 @@ import { mkdir, watch, writeFile as writeFile$1 } from 'fs/promises';
 import { dirname, join } from 'path';
 import { writeFile, stat, readFile } from 'node:fs/promises';
 
-/******************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-/* global Reflect, Promise, SuppressedError, Symbol */
-
-
-function __awaiter(thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-}
-
-function __values(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-}
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
-}
-
-function __asyncGenerator(thisArg, _arguments, generator) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var g = generator.apply(thisArg, _arguments || []), i, q = [];
-    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
-    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
-    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
-    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
-    function fulfill(value) { resume("next", value); }
-    function reject(value) { resume("throw", value); }
-    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
-}
-
-function __asyncValues(o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-}
-
-typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-    var e = new Error(message);
-    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-};
-
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function getDefaultExportFromCjs (x) {
@@ -2093,12 +2025,12 @@ class Defer {
                 this.resolver = resolve;
                 this.rejecter = reject;
             });
-            this.internalCB = () => __awaiter(this, void 0, void 0, function* () {
+            this.internalCB = async () => {
                 this.timeout = undefined;
                 if (this.cb)
-                    yield this.cb();
+                    await this.cb();
                 this.resolver();
-            });
+            };
         }
         this.timeout = setTimeout(this.internalCB, this.delay);
         return this.promise;
@@ -2114,10 +2046,9 @@ class Defer {
         this.timeout = undefined;
     }
     resolve() {
-        var _a;
         if (this.timeout) {
             clearTimeout(this.timeout);
-            (_a = this.internalCB) === null || _a === void 0 ? void 0 : _a.call(this);
+            this.internalCB?.();
         }
         return this.promise;
     }
@@ -3593,40 +3524,42 @@ class I18nServer {
      * @param zones List of zones to condense.
      * @returns
      */
-    condense(locales_1) {
-        return __awaiter(this, arguments, void 0, function* (locales, zones = ['']) {
-            locales = removeDuplicates(locales);
-            const raws = yield Promise.all(zones.map((zone) => this.list(locales, zone))), results = [];
-            for (const raw of raws) {
-                const result = {};
-                results.push(result);
-                for (const key in raw) {
-                    const value = raw[key], keys = key.split('.'), lastKey = keys.pop();
-                    let current = result, hasValue = false; // Do we have a value who is not a fall back with a shorter key?
-                    for (const k of keys) {
-                        if (!(k in current))
-                            current[k] = {};
-                        else if (typeof current[k] === 'string')
-                            current[k] = { '': current[k] };
-                        const next = current[k];
-                        if ('' in next && !('.' in next))
-                            hasValue = true;
-                        current = next;
-                    }
-                    //'fr-CA' begins with 'fr-CA', 'fr' and '' but not 'en'
-                    const fallback = !locales[0].startsWith(value[0]), clk = current[lastKey];
-                    if (!hasValue || !fallback) {
-                        if (fallback)
-                            current[lastKey] = Object.assign(Object.assign({}, (typeof clk === 'object' ? clk : {})), { '': value[1], '.': '.' });
-                        else if (clk && typeof clk !== 'string')
-                            current[lastKey][''] = value[1];
-                        else
-                            current[lastKey] = value[1];
-                    }
+    async condense(locales, zones = ['']) {
+        locales = removeDuplicates(locales);
+        const raws = await Promise.all(zones.map((zone) => this.list(locales, zone))), results = [];
+        for (const raw of raws) {
+            const result = {};
+            results.push(result);
+            for (const key in raw) {
+                const value = raw[key], keys = key.split('.'), lastKey = keys.pop();
+                let current = result, hasValue = false; // Do we have a value who is not a fall back with a shorter key?
+                for (const k of keys) {
+                    if (!(k in current))
+                        current[k] = {};
+                    else if (typeof current[k] === 'string')
+                        current[k] = { '': current[k] };
+                    const next = current[k];
+                    if ('' in next && !('.' in next))
+                        hasValue = true;
+                    current = next;
+                }
+                //'fr-CA' begins with 'fr-CA', 'fr' and '' but not 'en'
+                const fallback = !locales[0].startsWith(value[0]), clk = current[lastKey];
+                if (!hasValue || !fallback) {
+                    if (fallback)
+                        current[lastKey] = {
+                            ...(typeof clk === 'object' ? clk : {}),
+                            '': value[1],
+                            '.': '.'
+                        };
+                    else if (clk && typeof clk !== 'string')
+                        current[lastKey][''] = value[1];
+                    else
+                        current[lastKey] = value[1];
                 }
             }
-            return results;
-        });
+        }
+        return results;
     }
 }
 
@@ -3634,102 +3567,108 @@ class MemDB {
     constructor(dictionary = {}) {
         this.dictionary = dictionary;
     }
-    list(locales, zone) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const result = {};
-            Object.entries(this.dictionary).forEach(([key, value]) => {
-                if (zone == value['.zone'] || (!zone && !value['.zone'])) {
-                    const locale = locales.find((locale) => locale in value);
-                    if (locale !== undefined)
-                        result[key] = [locale, value[locale]];
-                }
-            });
-            return result;
-        });
-    }
-    workList(locales) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const result = [];
-            Object.entries(this.dictionary).forEach(([key, value]) => {
-                var _a;
-                const entry = Object.assign({ key, zone: value['.zone'] || '', texts: {} }, (value['.keyInfos'] && { infos: value['.keyInfos'] }));
-                const keys = Object.assign(Object.assign({}, value), value['.textInfos']);
-                for (const locale in keys) {
-                    if (locales.some((demanded) => locale.startsWith(demanded))) {
-                        entry.texts[locale] = Object.assign(Object.assign({}, (value[locale] && { text: value[locale] })), (((_a = value['.textInfos']) === null || _a === void 0 ? void 0 : _a[locale]) && { infos: value['.textInfos'][locale] }));
-                    }
-                }
-                result.push(entry);
-            });
-            return result;
-        });
-    }
-    getZone(key, locales) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.dictionary[key])
-                throw new Error(`Key "${key}" not found`);
-            if (!this.dictionary[key])
-                return false;
-            const zone = this.dictionary[key]['.zone'];
-            return !locales || locales.some((locale) => this.dictionary[key][locale] !== undefined)
-                ? zone || ''
-                : false;
-        });
-    }
-    modify(key, locale, value, textInfos) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.dictionary[key])
-                throw new Error(`Key "${key}" not found`);
-            if (!/^[\w-]*$/g.test(locale))
-                throw new Error(`Bad locale: ${locale} (only letters, digits, "_" and "-" allowed)`);
-            this.dictionary[key][locale] = value;
-            if (textInfos) {
-                const tis = this.dictionary[key]['.textInfos'];
-                tis[locale] = Object.assign(Object.assign({}, tis[locale]), textInfos);
-                for (const ti in textInfos)
-                    if (textInfos[ti] === undefined)
-                        delete tis[locale][ti];
+    async list(locales, zone) {
+        const result = {};
+        Object.entries(this.dictionary).forEach(([key, value]) => {
+            if (zone == value['.zone'] || (!zone && !value['.zone'])) {
+                const locale = locales.find((locale) => locale in value);
+                if (locale !== undefined)
+                    result[key] = [locale, value[locale]];
             }
         });
+        return result;
     }
-    key(key, zone, keyInfos) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const entry = this.dictionary[key] || {}, ez = entry['.zone'];
-            if (!/^[\w\-\+\*\.]*$/g.test(key) || `.${key}.`.includes('.then.'))
-                throw new Error(`Bad key-name: ${key} (only letters, digits, "_+-*." allowed) (and no "then" part)`);
-            this.dictionary[key] = Object.assign(Object.assign(Object.assign({}, entry), ((entry['.keyInfos'] || keyInfos) && {
-                '.keyInfos': Object.assign(Object.assign({}, entry['.keyInfos']), keyInfos)
-            })), { '.zone': zone });
-            const kis = this.dictionary[key]['.keyInfos'];
-            if (kis)
-                for (const ki in keyInfos)
-                    if (keyInfos[ki] === undefined)
-                        delete kis[ki];
-            return zone !== ez;
-        });
-    }
-    reKey(key, newKey) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.dictionary[key])
-                throw new Error(`Key "${key}" not found`);
-            if (newKey && this.dictionary[newKey])
-                throw new Error(`Key "${newKey}" already exists`);
-            const rv = {
-                texts: Object.fromEntries(Object.entries(this.dictionary[key] || {}).filter(([k]) => !k.startsWith('.'))),
-                zone: this.dictionary[key]['.zone'] || ''
+    async workList(locales) {
+        const result = [];
+        Object.entries(this.dictionary).forEach(([key, value]) => {
+            const entry = {
+                key,
+                zone: value['.zone'] || '',
+                texts: {},
+                ...(value['.keyInfos'] && { infos: value['.keyInfos'] })
             };
-            if (newKey)
-                this.dictionary[newKey] = this.dictionary[key];
-            delete this.dictionary[key];
-            return rv;
+            const keys = { ...value, ...value['.textInfos'] };
+            for (const locale in keys) {
+                if (locales.some((demanded) => locale.startsWith(demanded))) {
+                    entry.texts[locale] = {
+                        ...(value[locale] && { text: value[locale] }),
+                        ...(value['.textInfos']?.[locale] && { infos: value['.textInfos'][locale] })
+                    };
+                }
+            }
+            result.push(entry);
         });
+        return result;
     }
-    get(key) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.dictionary[key])
-                throw new Error(`Key "${key}" not found`);
-            return Object.fromEntries(Object.entries(this.dictionary[key]).filter(([k]) => !k.startsWith('.')));
-        });
+    async getZone(key, locales) {
+        if (!this.dictionary[key])
+            throw new Error(`Key "${key}" not found`);
+        if (!this.dictionary[key])
+            return false;
+        const zone = this.dictionary[key]['.zone'];
+        return !locales || locales.some((locale) => this.dictionary[key][locale] !== undefined)
+            ? zone || ''
+            : false;
+    }
+    async modify(key, locale, value, textInfos) {
+        if (!this.dictionary[key])
+            throw new Error(`Key "${key}" not found`);
+        if (!/^[\w-]*$/g.test(locale))
+            throw new Error(`Bad locale: ${locale} (only letters, digits, "_" and "-" allowed)`);
+        if (value === undefined)
+            delete this.dictionary[key][locale];
+        else
+            this.dictionary[key][locale] = value;
+        if (textInfos) {
+            const tis = this.dictionary[key]['.textInfos'];
+            tis[locale] = {
+                ...tis[locale],
+                ...textInfos
+            };
+            for (const ti in textInfos)
+                if (textInfos[ti] === undefined)
+                    delete tis[locale][ti];
+        }
+    }
+    async key(key, zone, keyInfos) {
+        const entry = this.dictionary[key] || {}, ez = entry['.zone'];
+        if (!/^[\w\-\+\*\.]*$/g.test(key) || `.${key}.`.includes('.then.'))
+            throw new Error(`Bad key-name: ${key} (only letters, digits, "_+-*." allowed) (and no "then" part)`);
+        this.dictionary[key] = {
+            ...entry,
+            ...((entry['.keyInfos'] || keyInfos) && {
+                '.keyInfos': {
+                    ...entry['.keyInfos'],
+                    ...keyInfos
+                }
+            }),
+            '.zone': zone
+        };
+        const kis = this.dictionary[key]['.keyInfos'];
+        if (kis)
+            for (const ki in keyInfos)
+                if (keyInfos[ki] === undefined)
+                    delete kis[ki];
+        return zone !== ez;
+    }
+    async reKey(key, newKey) {
+        if (!this.dictionary[key])
+            throw new Error(`Key "${key}" not found`);
+        if (newKey && this.dictionary[newKey])
+            throw new Error(`Key "${newKey}" already exists`);
+        const rv = {
+            texts: Object.fromEntries(Object.entries(this.dictionary[key] || {}).filter(([k]) => !k.startsWith('.'))),
+            zone: this.dictionary[key]['.zone'] || ''
+        };
+        if (newKey)
+            this.dictionary[newKey] = this.dictionary[key];
+        delete this.dictionary[key];
+        return rv;
+    }
+    async get(key) {
+        if (!this.dictionary[key])
+            throw new Error(`Key "${key}" not found`);
+        return Object.fromEntries(Object.entries(this.dictionary[key]).filter(([k]) => !k.startsWith('.')));
     }
 }
 
@@ -3747,29 +3686,30 @@ const serialization = {
             return preTabs ? stringified.replace(/\n/g, '\n' + '\t'.repeat(preTabs)) : stringified;
         }
         let rv = dictionary['.dbInfos'] ? `#${stringify$1(dictionary['.dbInfos'])}\n` : '';
-        for (const [key, value] of Object.entries(dictionary)) {
-            const ti = value['.textInfos'];
-            rv +=
-                key.replace(/:/g, '::') +
-                    (value['.keyInfos'] ? optioned(value['.keyInfos']) : '') +
-                    ':' +
-                    value['.zone'] +
-                    '\n' +
-                    Object.entries(value)
-                        .filter(([k]) => !k.startsWith('.'))
-                        .map(([k, v]) => '\t' +
-                        k +
-                        ((ti === null || ti === void 0 ? void 0 : ti[k]) ? optioned(ti[k], 1) : '') +
+        for (const [key, value] of Object.entries(dictionary))
+            if (key[0] !== '.') {
+                const ti = value['.textInfos'];
+                rv +=
+                    key.replace(/:/g, '::') +
+                        (value['.keyInfos'] ? optioned(value['.keyInfos']) : '') +
                         ':' +
-                        v.replace(/\n/g, '\n\t\t') +
-                        '\n')
+                        value['.zone'] +
+                        '\n' +
+                        Object.entries(value)
+                            .filter(([k]) => !k.startsWith('.'))
+                            .map(([k, v]) => '\t' +
+                            k +
+                            (ti?.[k] ? optioned(ti[k], 1) : '') +
+                            ':' +
+                            v.replace(/\n/g, '\n\t\t') +
+                            '\n')
+                            .join('');
+                if (ti)
+                    rv += Object.entries(ti)
+                        .filter(([k]) => !(k in value))
+                        .map(([k, v]) => '\t' + k + optioned(v, 1) + '\n')
                         .join('');
-            if (ti)
-                rv += Object.entries(ti)
-                    .filter(([k]) => !(k in value))
-                    .map(([k, v]) => '\t' + k + optioned(v, 1) + '\n')
-                    .join('');
-        }
+            }
         return rv;
     },
     deserialize(data) {
@@ -3784,7 +3724,11 @@ const serialization = {
             data = data.slice(mda[0].length);
         }
         serialization.analyze(data, (key, zone, infos) => {
-            dictionary[key] = Object.assign(Object.assign({}, (infos && { '.keyInfos': infos })), { '.zone': zone, '.textInfos': {} });
+            dictionary[key] = {
+                ...(infos && { '.keyInfos': infos }),
+                '.zone': zone,
+                '.textInfos': {}
+            };
         }, (key, locale, text, infos) => {
             if (infos)
                 dictionary[key]['.textInfos'][locale] = infos;
@@ -3830,7 +3774,7 @@ const serialization = {
                 lastIndex = rex.locale.lastIndex;
                 onText(key, localeFetch[1], localeFetch[3] && localeFetch[3].replace(/\u0000\t\t/g, '\n'), localeFetch[2] ? parse(localeFetch[2].replace(/\u0000/g, '\n')) : undefined);
             }
-            endKey === null || endKey === void 0 ? void 0 : endKey(key);
+            endKey?.(key);
             rex.key.lastIndex = lastIndex;
         }
         if (rex.key.lastIndex > 0 || !rex.key.test(data))
@@ -3844,90 +3788,51 @@ class FileDB extends MemDB {
         super();
         this.path = path;
         this.loaded = this.reload();
-        this.saving = new Defer(() => __awaiter(this, void 0, void 0, function* () {
+        this.saving = new Defer(async () => {
             let data = serialization.serialize(this.dictionary);
-            yield writeFile(this.path, data, 'utf16le');
-        }), saveDelay);
+            await writeFile(this.path, data, 'utf16le');
+        }, saveDelay);
     }
-    reload() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // In case of too much time, write a "modified" call
-            const fStat = yield stat(this.path);
-            if (fStat.isFile() && fStat.size > 0)
-                this.dictionary = serialization.deserialize(yield readFile(this.path, 'utf16le'));
-        });
+    async reload() {
+        // In case of too much time, write a "modified" call
+        const fStat = await stat(this.path);
+        if (fStat.isFile() && fStat.size > 0)
+            this.dictionary = serialization.deserialize(await readFile(this.path, 'utf16le'));
     }
-    save() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.saving.resolve();
-        });
+    async save() {
+        return this.saving.resolve();
     }
     //#region Forwards
-    list(locales, zone) {
-        const _super = Object.create(null, {
-            list: { get: () => super.list }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.loaded;
-            return _super.list.call(this, locales, zone);
-        });
+    async list(locales, zone) {
+        await this.loaded;
+        return super.list(locales, zone);
     }
-    workList(locales) {
-        const _super = Object.create(null, {
-            workList: { get: () => super.workList }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.loaded;
-            return _super.workList.call(this, locales);
-        });
+    async workList(locales) {
+        await this.loaded;
+        return super.workList(locales);
     }
-    getZone(key, locales) {
-        const _super = Object.create(null, {
-            getZone: { get: () => super.getZone }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.loaded;
-            return _super.getZone.call(this, key, locales);
-        });
+    async getZone(key, locales) {
+        await this.loaded;
+        return super.getZone(key, locales);
     }
-    modify(key, locale, value, textInfos) {
-        const _super = Object.create(null, {
-            modify: { get: () => super.modify }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.loaded;
-            this.saving.defer();
-            return _super.modify.call(this, key, locale, value, textInfos);
-        });
+    async modify(key, locale, value, textInfos) {
+        await this.loaded;
+        this.saving.defer();
+        return super.modify(key, locale, value, textInfos);
     }
-    key(key, zone, keyInfos) {
-        const _super = Object.create(null, {
-            key: { get: () => super.key }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.loaded;
-            this.saving.defer();
-            return _super.key.call(this, key, zone, keyInfos);
-        });
+    async key(key, zone, keyInfos) {
+        await this.loaded;
+        this.saving.defer();
+        return super.key(key, zone, keyInfos);
     }
-    get(key) {
-        const _super = Object.create(null, {
-            get: { get: () => super.get }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.loaded;
-            return _super.get.call(this, key);
-        });
+    async get(key) {
+        await this.loaded;
+        return super.get(key);
     }
-    reKey(key, newKey) {
-        const _super = Object.create(null, {
-            reKey: { get: () => super.reKey }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.loaded;
-            this.saving.defer();
-            return _super.reKey.call(this, key, newKey);
-        });
+    async reKey(key, newKey) {
+        await this.loaded;
+        this.saving.defer();
+        return super.reKey(key, newKey);
     }
 }
 
@@ -3975,91 +3880,46 @@ function fatal(message) {
 if (!options.input)
     fatal('Input must be specified');
 const fdb = new FileDB(options.input), server = new I18nServer(fdb);
-function exported() {
-    return __asyncGenerator(this, arguments, function* exported_1() {
-        for (const locale of options.locales) {
-            const condensed = stringify(yield __await(server.condense([locale, ...options.locales])));
-            yield yield __await({
-                locale,
-                content: `OmnI18n.preload('${locale}', ${condensed})`
-            });
-        }
-    });
+async function* exported() {
+    for (const locale of options.locales) {
+        const condensed = stringify(await server.condense([locale, ...options.locales]));
+        yield {
+            locale,
+            content: `OmnI18n.preload('${locale}', ${condensed})`
+        };
+    }
 }
-function exportLocales() {
-    return __awaiter(this, void 0, void 0, function* () {
-        var _a, e_1, _b, _c, _d, e_2, _e, _f;
-        if (options.grouped) {
-            let total = '';
-            try {
-                for (var _g = true, _h = __asyncValues(exported()), _j; _j = yield _h.next(), _a = _j.done, !_a; _g = true) {
-                    _c = _j.value;
-                    _g = false;
-                    const { content } = _c;
-                    total += content + '\n';
-                }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (!_g && !_a && (_b = _h.return)) yield _b.call(_h);
-                }
-                finally { if (e_1) throw e_1.error; }
-            }
-            const output = join(options.output, options.grouped);
+async function exportLocales() {
+    if (options.grouped) {
+        let total = '';
+        for await (const { content } of exported())
+            total += content + '\n';
+        const output = join(options.output, options.grouped);
+        console.log('->', output);
+        await writeFile$1(output, total, 'utf8');
+    }
+    else {
+        for await (const { locale, content } of exported()) {
+            const output = join(options.output, options.pattern.replace('$', locale));
             console.log('->', output);
-            yield writeFile$1(output, total, 'utf8');
+            await writeFile$1(output, content, 'utf8');
         }
-        else {
-            try {
-                for (var _k = true, _l = __asyncValues(exported()), _m; _m = yield _l.next(), _d = _m.done, !_d; _k = true) {
-                    _f = _m.value;
-                    _k = false;
-                    const { locale, content } = _f;
-                    const output = join(options.output, options.pattern.replace('$', locale));
-                    console.log('->', output);
-                    yield writeFile$1(output, content, 'utf8');
-                }
-            }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (!_k && !_d && (_e = _l.return)) yield _e.call(_l);
-                }
-                finally { if (e_2) throw e_2.error; }
-            }
-        }
-    });
+    }
 }
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        var _a, e_3, _b, _c;
-        yield fdb.loaded;
-        if (options.output)
-            mkdir(options.output, { recursive: true });
-        else
-            options.output = dirname(options.input);
-        yield exportLocales();
-        if (options.watch) {
+async function main() {
+    await fdb.loaded;
+    if (options.output)
+        mkdir(options.output, { recursive: true });
+    else
+        options.output = dirname(options.input);
+    await exportLocales();
+    if (options.watch) {
+        console.log('Waiting for changes...');
+        for await (const event of watch(options.input)) {
+            await fdb.reload();
+            await exportLocales();
             console.log('Waiting for changes...');
-            try {
-                for (var _d = true, _e = __asyncValues(watch(options.input)), _f; _f = yield _e.next(), _a = _f.done, !_a; _d = true) {
-                    _c = _f.value;
-                    _d = false;
-                    const event = _c;
-                    yield fdb.reload();
-                    yield exportLocales();
-                    console.log('Waiting for changes...');
-                }
-            }
-            catch (e_3_1) { e_3 = { error: e_3_1 }; }
-            finally {
-                try {
-                    if (!_d && !_a && (_b = _e.return)) yield _b.call(_e);
-                }
-                finally { if (e_3) throw e_3.error; }
-            }
         }
-    });
+    }
 }
 main();
