@@ -2109,7 +2109,7 @@ function addaddress(ad, edit) {
         options = (hasbip === true) ? choose_wallet_str : (test_derive === true && c_derive[currency]) ? (hasbip32(currency) === true) ? derive_seed_str : choose_wallet_str : choose_wallet_str,
         pnotify = (body.hasClass("showstartpage")) ? "<div class='popnotify' style='display:block'>" + options + "</div>" : "<div class='popnotify'></div>",
         scanqr = (hascam === true && edit === false) ? "<div class='qrscanner' data-currency='" + currency + "' data-id='address' title='scan qr-code'><span class='icon-qrcode'></span></div>" : "",
-        title = (edit === true) ? "<h2 class='icon-pencil' i18n='cmd.label.edit'>" + T.cmd.label.edit + "</h2>" : "<h2>" + getcc_icon(ad.cmcid, cpid, ad.erc20) + T.cmd.address.add(currency) + "</h2>",
+        title = (edit === true) ? "<h2 class='icon-pencil' i18n='cmd.label.edit'>" + T.cmd.label.edit + "</h2>" : "<h2>" + getcc_icon(ad.cmcid, cpid, ad.erc20) + T.cmd.address.add.currency(currency) + "</h2>",
         pk_checkbox = (edit === true) ? "" : "<div id='pk_confirm' class='noselect'><div id='pk_confirmwrap' class='cb_wrap' data-checked='false'><span class='checkbox'></span></div><span i18n='fld.iOwn'>" + T.fld.iOwn + "</span></div>",
         addeditclass = (edit === true) ? "edit" : "add",
         xpubclass = (nopub) ? " hasxpub" : " noxpub",
